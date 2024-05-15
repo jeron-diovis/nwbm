@@ -1,0 +1,32 @@
+{
+  "name": "core",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "lint": "yarn lint:js && yarn lint:ts && yarn lint:css",
+    "preview": "vite preview",
+    "stat": "./view-stats.sh",
+    "lint:js": "eslint src --ext .cjs,.js,.jsx,.ts,.tsx",
+    "lint:ts": "tsc --noEmit && cd mock && tsc --noEmit",
+    "lint:css": "stylelint \"src/**/*.{s,}css\"",
+    "fix": "yarn lint:js --fix && yarn lint:css --fix",
+    "test": "vitest"
+  },
+  "dependencies": {
+    "axios": "^1.6.8",
+    "clsx": "^2.1.0",
+    "date-fns": "^3.6.0",
+    "lodash-es": "^4.17.21",
+    "query-string": "^9.0.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "utility-types": "^3.11.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.66",
+    "@types/react-dom": "^18.2.22"
+  }
+}
