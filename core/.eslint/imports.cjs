@@ -20,10 +20,13 @@ module.exports = {
           /* tests */
           '**/*.test.ts{x,}',
           /* vite configs */
+          'vite.config.*',
           '.vite/*',
           /* whatever other 'rc' config files */
           '.*rc.{c,}{j,t}s',
         ],
+        /* @link https://github.com/import-js/eslint-plugin-import/blob/main/docs/rules/no-extraneous-dependencies.md#options */
+        packageDir: ['./', '../'],
       },
     ],
 

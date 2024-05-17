@@ -1,7 +1,6 @@
 import sysPath from 'path'
 
 import { defineConfig } from './.vite'
-
 // https://vitejs.dev/config/
 // Lots of stuff here: https://github.com/vitejs/awesome-vite#plugins
 export default defineConfig({
