@@ -1,0 +1,93 @@
+# @see https://stylelint.io/user-guide/rules/list
+
+extends:
+  - stylelint-config-css-modules
+
+defaultSeverity: warning
+
+rules:
+  # @see https://stylelint.io/user-guide/rules/regex#enforce-a-case
+  # snake_case – because of css modules.
+  selector-class-pattern: "(^([a-z][a-z0-9]*)(_[a-z0-9]+)*$)"
+
+  # @see https://stylelint.io/user-guide/rules/list/font-family-name-quotes/#options
+  font-family-name-quotes: "always-unless-keyword"
+
+  color-hex-length: "short"
+
+  # this rule doesn't make any real help,
+  # while exact units may be needed in `calc` formulas
+  length-zero-no-unit: null
+
+  # Often we want to group some props manually
+  declaration-empty-line-before: null
+  custom-property-empty-line-before: null
+
+  # In very rare cases it's needed, disable this rule locally
+  declaration-no-important: true
+
+  at-rule-empty-line-before:
+    - always
+    -
+      except:
+        - "first-nested"
+      ignore:
+        - "after-comment"
+        - "blockless-after-same-name-blockless"
+
+      ignoreAtRules:
+        - "if"
+        - "else"
+        - "each"
+        - "for"
+        - "return"
+
+  rule-empty-line-before:
+    - always
+    - ignore:
+        - first-nested
+        - after-comment
+
+  comment-whitespace-inside: null
+  comment-empty-line-before: null
+
+overrides:
+  - # css-only rules
+    files:
+      - "**/*.css"
+    rules:
+      at-rule-no-unknown:
+        - true
+        - ignoreAtRules:
+            # @see https://www.npmjs.com/package/postcss-mixins
+            - "define-mixin"
+            - "mixin"
+
+  - # scss-only rules
+    files:
+      - "**/*.scss"
+    extends:
+      # @see https://github.com/stylelint-scss/stylelint-scss#list-of-rules
+      - stylelint-config-standard-scss
+
+    rules:
+      # This rule enforces using only placeholder selectors in `@extend`.
+      # Which is not always the real usecase.
+      scss/at-extend-no-missing-placeholder: null
+
+      scss/at-import-partial-extension: null
+      scss/at-import-partial-extension-whitelist:
+        - module
+
+      # @see https://github.com/stylelint-scss/stylelint-scss/blob/HEAD/src/rules/no-global-function-names/README.md
+      # It's either not supported by node-sass, or smth else,
+      # but following this rule cause compiler to crash with like `SassError: There is no module with the namespace "color"`
+      # Also not supported by editors (in particular, WebStorm).
+      scss/no-global-function-names: null
+
+      block-closing-brace-newline-after:
+        - always
+        - ignoreAtRules:
+            - "if"
+            - "else"
+
