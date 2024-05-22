@@ -26,7 +26,7 @@ module.exports = {
           '.*rc.{c,}{j,t}s',
         ],
         /* @link https://github.com/import-js/eslint-plugin-import/blob/main/docs/rules/no-extraneous-dependencies.md#options */
-        packageDir: ['./', '../'],
+        packageDir: ['./', '../../'],
       },
     ],
 
