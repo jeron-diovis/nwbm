@@ -25,8 +25,10 @@ module.exports = {
           /* whatever other 'rc' config files */
           '.*rc.{c,}{j,t}s',
         ],
-        /* @link https://github.com/import-js/eslint-plugin-import/blob/main/docs/rules/no-extraneous-dependencies.md#options */
-        // packageDir: ['./', '../../'],
+
+        /* @link https://github.com/import-js/eslint-plugin-import/blob/main/docs/rules/no-extraneous-dependencies.md#options
+         * Without pointing to all package.json locations, rule can't validate deps provided by workspace. */
+        packageDir: getPackageDirs(),
       },
     ],
 
@@ -78,4 +80,18 @@ module.exports = {
       },
     ],
   },
+}
+
+function getPackageDirs() {
+  const CWD = process.cwd()
+  const isPackage = require('../package.json').workspaces.some(pattern =>
+    CWD.includes(pattern.replace('*', ''))
+  )
+
+  if (!isPackage) return undefined
+
+  const sysPath = require('path')
+  const PATH_TO_ROOT = sysPath.relative(CWD, sysPath.resolve(__dirname, '..'))
+
+  return ['./', PATH_TO_ROOT]
 }

@@ -8,7 +8,17 @@ module.exports = {
     },
   },
 
-  ignorePatterns: ['dist'],
+  ignorePatterns: [
+    'dist',
+    // Keep configs pretty too
+    '!.eslint',
+    '!.eslintrc.cjs',
+    '!.vite',
+    '!.lintstagedrc.cjs',
+    '!.prettierrc.cjs',
+    '!.storybook',
+  ],
+
   parser: '@typescript-eslint/parser',
   plugins: ['react', 'react-refresh'],
 
@@ -26,13 +36,4 @@ module.exports = {
       { allowConstantExport: true },
     ],
   },
-
-  overrides: [
-    {
-      files: ['**/*.js'],
-      rules: {
-        'no-undef': 'error',
-      },
-    },
-  ],
 }

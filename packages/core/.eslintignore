@@ -1,6 +1,0 @@
-# keep our configs pretty too
-!.eslint
-!.vite
-!.lintstagedrc.cjs
-!.prettierrc.cjs
-!.storybook
