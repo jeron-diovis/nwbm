@@ -14,7 +14,7 @@ module.exports = {
     '!.eslint',
     '!.eslintrc.cjs',
     '!.vite',
-    '!.lintstagedrc.cjs',
+    '!.lintstaged*',
     '!.prettierrc.cjs',
     '!.storybook',
   ],
