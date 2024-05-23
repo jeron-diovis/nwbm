@@ -19,6 +19,7 @@ async function removeIgnoredFiles(files) {
   return filtered.join(' ')
 }
 
+/* Folders supposed to exist in packages. Not in root folder. */
 const paths = '{src,mock,tests}/**'
 
 module.exports = {

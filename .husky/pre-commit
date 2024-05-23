@@ -1,0 +1,7 @@
+#!/bin/sh
+
+HUSKY_ROOT=$(dirname "$0")
+
+. "$HUSKY_ROOT/_/husky.sh"
+
+npx lint-staged
