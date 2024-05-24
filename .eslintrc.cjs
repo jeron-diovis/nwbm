@@ -12,10 +12,9 @@ module.exports = {
     'dist',
     // Keep configs pretty too
     '!.eslint',
-    '!.eslintrc.cjs',
     '!.vite',
     '!.lintstaged*',
-    '!.prettierrc.cjs',
+    '!.*rc.cjs',
     '!.storybook',
   ],
 
