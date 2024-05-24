@@ -1,2 +1,1 @@
-extends:
-  - ../../.stylelintrc.yml
+extends: ../../.stylelintrc.yml
