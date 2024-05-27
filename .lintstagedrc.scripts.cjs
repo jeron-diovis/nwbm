@@ -70,15 +70,13 @@ const SCRIPTS = {
 // ---
 
 /**
- * @param {Partial<LintStagedDict>} baseDirs
+ * @param {string|Partial<LintStagedDict>} base
  * @returns {LintStagedDict}
  */
-function createPaths(baseDirs) {
+function createPaths(base) {
   return Object.entries(FILES).reduce((acc, [fileType, filePattern]) => {
-    acc[fileType] =
-      fileType in baseDirs
-        ? `${baseDirs[fileType]}/${filePattern}`
-        : filePattern
+    const prefix = typeof base === 'string' ? base : base[fileType] ?? ''
+    acc[fileType] = prefix === '' ? filePattern : `${prefix}/${filePattern}`
     return acc
   }, {})
 }
@@ -88,11 +86,6 @@ function createPaths(baseDirs) {
  * @returns {LintStagedConfig}
  */
 function createDefaultConfig(base = {}) {
-  if (typeof base === 'string') {
-    // eslint-disable-next-line no-param-reassign
-    base = { js: base, ts: base, css: base }
-  }
-
   return Object.entries(createPaths(base)).reduce(
     (acc, [fileType, filePattern]) => {
       acc[filePattern] = SCRIPTS[fileType]
