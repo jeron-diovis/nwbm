@@ -87,9 +87,7 @@ const createMockTransform =
 /**
  * Prepend api paths prefix to created mocks
  */
-export const createTransformPathPrefix: (
-  prefix: string
-) => MockTransform = prefix =>
+export const createTransformPathPrefix = (prefix: string) =>
   createMockTransform(mock => {
     if (!mock.url.startsWith('/')) {
       mock.url = sysPath.join(prefix, mock.url)
