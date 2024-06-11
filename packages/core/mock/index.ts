@@ -1,1 +1,1 @@
-export { defineMock } from '../.vite/cfg.json-server'
+export { defineMock } from '../.vite-root/cfg.json-server'

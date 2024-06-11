@@ -22,6 +22,7 @@ module.exports = {
           /* vite configs */
           'vite.config.*',
           '.vite/*',
+          '.vite-root/*',
           /* whatever other 'rc' config files */
           '.*rc{,.*}',
         ],

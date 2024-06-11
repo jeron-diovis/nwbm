@@ -25,3 +25,6 @@ dist-ssr
 
 .eslintcache
 .stylelintcache
+
+# Symlink to the root config
+/packages/**/.vite-root

@@ -9,7 +9,8 @@
   },
   "include": [
     "vite.config.ts",
-    ".vite/**/*.ts",
+    ".vite-root/**/*.ts",
+    ".vite-root/**/*.ts",
     "package.json"
   ]
 }

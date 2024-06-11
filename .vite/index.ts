@@ -27,12 +27,15 @@ export {
 export const defineConfig = useChunks([
   useReact,
   useCSS,
-  useLint,
   useModularImports,
-  // useNodeCompat,
   useJsonServer,
   useChunkSplit,
-  useProxy,
   useTests,
   useBuildAnalysis,
+  /* lint commands are package-specific and should be configured there */
+  // useLint,
+  /* same for proxies */
+  // useProxy,
+  /* this is not necessarily needed. Only export it as preset */
+  // useNodeCompat,
 ])

@@ -86,6 +86,7 @@ function add_npm_scripts() {
   npm pkg set "scripts.lint"="yarn lint:js && yarn lint:ts && yarn lint:css"
   npm pkg set "scripts.fix"="yarn lint:js --fix && yarn lint:css --fix"
   npm pkg set "scripts.test"="vitest"
+  npm pkg set "scripts.prepare"="npx symlink-dir ../../.vite .vite-root"
 }
 
 function edit_ts_config() {
