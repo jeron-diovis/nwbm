@@ -70,4 +70,13 @@ module.exports = {
     // then with optional chaining or other workarounds.
     '@typescript-eslint/no-non-null-assertion': 'off',
   },
+
+  overrides: [
+    {
+      files: ['*.test.*', '*.spec.*'],
+      rules: {
+        '@typescript-eslint/no-explicit-any': 'off',
+      },
+    },
+  ],
 }

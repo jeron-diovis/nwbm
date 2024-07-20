@@ -9,32 +9,6 @@ module.exports = {
   rules: {
     'import/newline-after-import': 'warn',
 
-    'import/no-extraneous-dependencies': [
-      'error',
-      {
-        devDependencies: [
-          /* Stories have nothing to do with production build/env, so they can safely use dev deps. */
-          '**/{*.,}stories.{j,t}s{x,}',
-          /* storybook configs */
-          '.storybook/**/*',
-          /* tests */
-          '**/*.test.ts{x,}',
-          /* vite configs */
-          'vite.config.*',
-          '.vite/*',
-          '.vite-root/*',
-          /* whatever other 'rc' config files */
-          '.*rc{,.*}',
-          /* packages demo playground */
-          'demo/**/*',
-        ],
-
-        /* @link https://github.com/import-js/eslint-plugin-import/blob/main/docs/rules/no-extraneous-dependencies.md#options
-         * Without pointing to all package.json locations, rule can't validate deps provided by workspace. */
-        packageDir: getPackageDirs(),
-      },
-    ],
-
     'sort-imports': [
       'warn',
       {
@@ -83,18 +57,4 @@ module.exports = {
       },
     ],
   },
-}
-
-function getPackageDirs() {
-  const CWD = process.cwd()
-  const isPackage = require('../package.json').workspaces.some(pattern =>
-    CWD.includes(pattern.replace('*', ''))
-  )
-
-  if (!isPackage) return undefined
-
-  const sysPath = require('path')
-  const PATH_TO_ROOT = sysPath.relative(CWD, sysPath.resolve(__dirname, '..'))
-
-  return ['./', PATH_TO_ROOT]
 }

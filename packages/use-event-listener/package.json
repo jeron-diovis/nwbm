@@ -1,5 +1,6 @@
 {
   "name": "@yai/use-event-listener",
+  "license": "MIT",
   "version": "0.0.0",
   "type": "module",
   "files": [
@@ -14,11 +15,12 @@
     "lint": "npm run lint:js && npm run lint:ts && npm run lint:css",
     "preview": "vite preview",
     "stat": "./view-stats.sh",
-    "lint:js": "eslint {src,demo} --ext .cjs,.js,.jsx,.ts,.tsx --no-error-on-unmatched-pattern",
+    "lint:js": "eslint {src,demo,test} --ext .cjs,.js,.jsx,.ts,.tsx --no-error-on-unmatched-pattern",
     "lint:ts": "tsc --noEmit",
     "lint:css": "stylelint \"{src,demo}/**/*.{s,}css\" --aei",
     "fix": "npm run lint:js --fix && npm run lint:css --fix",
     "test": "vitest",
+    "test:w": "vitest --watch",
     "prepare": "npx symlink-dir ../../.vite .vite-root",
     "prepublishOnly": "npm run test && npm run build"
   },
@@ -30,5 +32,8 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "utility-types": "^3.11.0"
+  },
+  "peerDependencies": {
+    "react": ">=18.3.1"
   }
 }
