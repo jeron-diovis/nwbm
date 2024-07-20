@@ -9,7 +9,7 @@ export const useTests = defineChunk(() => ({
   test: {
     globals: true,
     environment: 'jsdom',
-    setupFiles: ['setupTests'],
+    setupFiles: ['test/setupTests'],
 
     forceRerunTriggers: [...configDefaults.forceRerunTriggers, '**/.vite/**'],
     /**
