@@ -20,7 +20,6 @@ export const useModularImports = defineChunk({
 
       patch('ramda', 'ramda/es'),
       patch('date-fns'),
-      // TODO: MUI
     ]),
   ],
 })

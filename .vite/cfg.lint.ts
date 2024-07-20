@@ -3,7 +3,7 @@ import { defineChunk } from 'vite-split-config'
 
 interface LintScripts {
   eslint: string
-  stylelint: string
+  stylelint?: string
 }
 
 export const useLint = (scripts: LintScripts) =>
@@ -27,9 +27,12 @@ export const useLint = (scripts: LintScripts) =>
          * Somehow, this does not affect behavior of dev mode.
          */
         eslint: { lintCommand: `${scripts.eslint} --max-warnings=0` },
-        stylelint: {
-          lintCommand: `${scripts.stylelint} --max-warnings=0`,
-        },
+
+        ...(scripts.stylelint && {
+          stylelint: {
+            lintCommand: `${scripts.stylelint} --max-warnings=0`,
+          },
+        }),
 
         /** Sadly, it's impossible to manage linter's severity with this plugin,
          * so by default it will open overlay for any non-important warnings.

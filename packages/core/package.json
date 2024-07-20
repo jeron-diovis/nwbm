@@ -8,14 +8,13 @@
   },
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build",
-    "lint": "yarn lint:js && yarn lint:ts && yarn lint:css",
+    "build": "vite build",
+    "lint": "pnpm lint:js && pnpm lint:ts",
     "preview": "vite preview",
     "stat": "./view-stats.sh",
-    "lint:js": "eslint src --ext .cjs,.js,.jsx,.ts,.tsx",
+    "lint:js": "eslint {src,demo} --ext .cjs,.js,.jsx,.ts,.tsx --no-error-on-unmatched-pattern",
     "lint:ts": "tsc --noEmit && cd mock && tsc --noEmit",
-    "lint:css": "stylelint \"src/**/*.{s,}css\"",
-    "fix": "yarn lint:js --fix && yarn lint:css --fix",
+    "fix": "pnpm lint:js --fix && pnpm lint:css --fix",
     "test": "vitest",
     "prepare": "npx symlink-dir ../../.vite .vite-root"
   },
