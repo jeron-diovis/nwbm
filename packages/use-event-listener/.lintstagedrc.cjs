@@ -4,4 +4,4 @@
 
 const { createDefaultConfig } = require('../../.lintstagedrc.scripts.cjs')
 
-module.exports = createDefaultConfig('{src,demo,tests}/**')
+module.exports = createDefaultConfig('{src,demo,test}/**')
