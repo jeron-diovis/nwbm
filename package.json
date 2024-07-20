@@ -4,7 +4,8 @@
     "packages/*"
   ],
   "scripts": {
-    "new": "./new-pkg.sh"
+    "new": "./new-pkg.sh",
+    "init-git-hooks": "./init-git-hooks.sh"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^6.4.2",

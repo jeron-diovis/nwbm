@@ -11,7 +11,7 @@ mkdir $PKG_PATH
 rsync -a --exclude=node_modules \
   --exclude=.vite-root \
   --exclude=dist \
-  packages/core/ \
+  packages/base/ \
   $PKG_PATH
 
 cd $PKG_PATH
