@@ -5,8 +5,7 @@
     "noEmit": false,
     "emitDeclarationOnly": false,
     "declaration": true,
-    "outDir": "dist",
-    "declarationDir": "dist/types"
+    "outDir": "dist"
   },
   "include": ["src"],
   "exclude": [
