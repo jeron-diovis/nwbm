@@ -2,12 +2,10 @@
   "name": "",
   "version": "0.0.0",
   "type": "module",
-  "exports": {
-    "./*": "./src/*"
-  },
   "files": [
     "dist"
   ],
+  "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "scripts": {
     "dev": "vite",
