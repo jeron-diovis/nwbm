@@ -1,5 +1,5 @@
 {
-  "name": "@scope/core",
+  "name": "",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -8,15 +8,17 @@
   },
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build:demo": "vite build",
+    "build": "tsc -p tsconfig.build.json",
     "lint": "pnpm lint:js && pnpm lint:ts",
     "preview": "vite preview",
     "stat": "./view-stats.sh",
     "lint:js": "eslint {src,demo} --ext .cjs,.js,.jsx,.ts,.tsx --no-error-on-unmatched-pattern",
-    "lint:ts": "tsc --noEmit && cd mock && tsc --noEmit",
+    "lint:ts": "tsc --noEmit",
     "fix": "pnpm lint:js --fix && pnpm lint:css --fix",
     "test": "vitest",
-    "prepare": "npx symlink-dir ../../.vite .vite-root"
+    "prepare": "npx symlink-dir ../../.vite .vite-root",
+    "prepublishOnly": "pnpm test && pnpm build"
   },
   "dependencies": {
     "axios": "^1.6.8",
