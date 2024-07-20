@@ -2,7 +2,6 @@ module.exports = {
   extends: [
     './base.cjs',
     './typescript.cjs',
-    './jsx-control-statements.cjs',
     './imports.cjs',
     './prettier.cjs',
   ],
@@ -18,6 +17,12 @@ module.exports = {
       files: ['**/*.cjs'],
       rules: {
         '@typescript-eslint/no-var-requires': 'off',
+      },
+    },
+    {
+      files: ['**/*.{c,}js'],
+      env: {
+        node: true,
       },
     },
     {
