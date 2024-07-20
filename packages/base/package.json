@@ -11,7 +11,7 @@
   "scripts": {
     "dev": "vite",
     "build:demo": "vite build",
-    "build": "tsc -p tsconfig.build.json",
+    "build": "rimraf dist && tsc -p tsconfig.build.json",
     "lint": "npm run lint:js && npm run lint:ts && npm run lint:css",
     "preview": "vite preview",
     "stat": "./view-stats.sh",
