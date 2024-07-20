@@ -96,7 +96,7 @@ export const useEventListener: IUseEventListener = (
   refListener.current = listener
   const refOptions = useRef(options)
   refOptions.current = options
-  const refIsUnmounted = useRef(false)
+  const refIsActive = useRef(true)
 
   // ---
 
@@ -118,8 +118,11 @@ export const useEventListener: IUseEventListener = (
       const { when, ...listenerOptions } = refOptions.current ?? {}
       if (when === false) return undefined
 
+      refIsActive.current = true
+
       const listener = (...args: any[]) => {
-        if (refIsUnmounted.current) return // ignore bubbling event if listener component was already unmounted
+        // ignore bubbling event if component was already unmounted or subscription changed
+        if (!refIsActive.current) return
         refListener.current(...args)
       }
 
@@ -129,7 +132,7 @@ export const useEventListener: IUseEventListener = (
         el.addEventListener(event, listener, listenerOptions)
       })
       return () => {
-        refIsUnmounted.current = true
+        refIsActive.current = false
         events.forEach(event => {
           el.removeEventListener(event, listener, listenerOptions)
         })
