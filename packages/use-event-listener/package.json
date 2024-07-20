@@ -9,29 +9,21 @@
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "scripts": {
-    "dev": "vite",
-    "build:demo": "vite build",
-    "build": "rimraf dist &&tsc -p tsconfig.build.json",
-    "lint": "npm run lint:js && npm run lint:ts && npm run lint:css",
-    "preview": "vite preview",
-    "stat": "./view-stats.sh",
+    "dev": "npm run test:w",
+    "build": "rimraf dist && tsc -p tsconfig.build.json",
+    "lint": "npm run lint:js && npm run lint:ts",
     "lint:js": "eslint {src,demo,test} --ext .cjs,.js,.jsx,.ts,.tsx --no-error-on-unmatched-pattern",
     "lint:ts": "tsc --noEmit",
-    "lint:css": "stylelint \"{src,demo}/**/*.{s,}css\" --aei",
-    "fix": "npm run lint:js --fix && npm run lint:css --fix",
+    "fix": "npm run lint:js -- --fix",
     "test": "vitest",
-    "test:w": "vitest --watch",
-    "prepare": "npx symlink-dir ../../.vite .vite-root",
+    "test:w": "npm run test -- --watch",
     "prepublishOnly": "npm run test && npm run build"
   },
   "devDependencies": {
     "@types/react": "^18.2.66",
     "@types/react-dom": "^18.2.22",
-    "clsx": "^2.1.0",
-    "lodash-es": "^4.17.21",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "utility-types": "^3.11.0"
+    "react-dom": "^18.2.0"
   },
   "peerDependencies": {
     "react": ">=18.3.1"
