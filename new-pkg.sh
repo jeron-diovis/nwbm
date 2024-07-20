@@ -16,3 +16,4 @@ rsync -a --exclude=node_modules \
 
 cd $PKG_PATH
 npm pkg set name=@yai/$NAME
+echo "# $NAME" > README.md
