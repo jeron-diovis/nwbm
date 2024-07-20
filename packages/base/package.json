@@ -13,16 +13,16 @@
     "dev": "vite",
     "build:demo": "vite build",
     "build": "tsc -p tsconfig.build.json",
-    "lint": "pnpm lint:js && pnpm lint:ts && pnpm lint:css",
+    "lint": "npm run lint:js && npm run lint:ts && npm run lint:css",
     "preview": "vite preview",
     "stat": "./view-stats.sh",
     "lint:js": "eslint {src,demo} --ext .cjs,.js,.jsx,.ts,.tsx --no-error-on-unmatched-pattern",
     "lint:ts": "tsc --noEmit",
     "lint:css": "stylelint \"{src,demo}/**/*.{s,}css\" --aei",
-    "fix": "pnpm lint:js --fix && pnpm lint:css --fix",
+    "fix": "npm run lint:js --fix && npm run lint:css --fix",
     "test": "vitest",
     "prepare": "npx symlink-dir ../../.vite .vite-root",
-    "prepublishOnly": "pnpm test && pnpm build"
+    "prepublishOnly": "npm run test && npm run build"
   },
   "devDependencies": {
     "@types/react": "^18.2.66",
