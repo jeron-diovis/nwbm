@@ -4,11 +4,11 @@ import App from './App.tsx'
 import './index.css'
 
 // example import via tsconfig.paths
-import Example1 from "@core/App.tsx"
+import Example1 from "../../core/demo/src/App.tsx"
 
 // example import via workspace (dependency in package.json),
 // in conjunction with "exports" in package.json
-import Example2 from "@scope/core/App.tsx"
+import Example2 from "../../core/demo/src/App.tsx"
 
 console.log(Example1, Example2)
 
