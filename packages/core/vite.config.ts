@@ -4,7 +4,10 @@ import { defineConfig as defineBaseConfig, useLint } from './.vite-root'
 import pkg from './package.json'
 
 const defineConfig = defineBaseConfig.extend([
-  useLint({ eslint: pkg.scripts['lint:js'] }),
+  useLint({
+    eslint: pkg.scripts['lint:js'],
+    stylelint: pkg.scripts['lint:css'],
+  }),
 ])
 
 export default defineConfig({
