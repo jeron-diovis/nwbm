@@ -83,7 +83,16 @@ export interface IUseEvent {
 
 // ---
 
-type InferEventFromMap<T> = T extends (e: infer U) => any ? U : T
+/* Approach to "EventsMap" type varies from lib to lib.
+ * As map values can be either callback function,
+ * or array of callback args,
+ * or just an event type.
+ */
+type InferEventFromMap<T> = T extends (e: infer U) => any
+  ? U
+  : T extends [infer E, ...any[]]
+    ? E
+    : never
 
 export interface IUseEventGeneric<EventMap, Options = object> {
   <E extends keyof EventMap>(
