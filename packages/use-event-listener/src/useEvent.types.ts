@@ -24,7 +24,7 @@ type Emitter3 = {
   removeListener: FnSubUnsub
 }
 
-export type Emitter = Emitter2 | Emitter1 | Emitter3
+export type Emitter = Emitter1 | Emitter2 | Emitter3
 //#endregion
 
 // ---
@@ -87,7 +87,7 @@ type InferEventTypeFromMap<T> = T extends (e: infer U) => any
     ? E
     : T
 
-export interface IUseEventGeneric<EventMap, Options = object> {
+export interface IUseEventMap<EventMap, Options = object> {
   <E extends keyof EventMap>(
     target: Emitter,
     event: MaybeArray<E>,

@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react'
 
-import { Emitter, IUseEvent, IUseEventGeneric } from './useEvent.types'
+import { Emitter, IUseEvent, IUseEventMap } from './useEvent.types'
 
 type Fn = (...args: any[]) => void
 
@@ -58,41 +58,31 @@ export const useEvent: IUseEvent = (target, event, listener, options) => {
 
 //#region createUseEvent
 export const createUseEvent = <EventMap, Options = object>() =>
-  useEvent as IUseEventGeneric<EventMap, Options>
+  useEvent as IUseEventMap<EventMap, Options>
 //#endregion
 
 // ---
 //#region generic sub/unsub
 
 function sub(target: Emitter, ...args: any[]) {
-  if ('on' in target) {
-    return (target.on as Fn)(...args)
-  }
+  const fn =
+    'on' in target
+      ? target.on
+      : 'addEventListener' in target
+        ? target.addEventListener
+        : target.addListener
 
-  if ('addEventListener' in target) {
-    return (target.addEventListener as Fn)(...args)
-  }
-
-  if ('addListener' in target) {
-    return (target.addListener as Fn)(...args)
-  }
-
-  throw new Error('Invalid subscription interface')
+  return (fn as Fn).call(target, ...args)
 }
 
 function unsub(target: Emitter, ...args: any[]) {
-  if ('off' in target) {
-    return (target.off as Fn)(...args)
-  }
+  const fn =
+    'off' in target
+      ? target.off
+      : 'removeEventListener' in target
+        ? target.removeEventListener
+        : target.removeListener
 
-  if ('removeEventListener' in target) {
-    return (target.removeEventListener as Fn)(...args)
-  }
-
-  if ('removeListener' in target) {
-    return (target.removeListener as Fn)(...args)
-  }
-
-  throw new Error('Invalid subscription interface')
+  return (fn as Fn).call(target, ...args)
 }
 //#endregion

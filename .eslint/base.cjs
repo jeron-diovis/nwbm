@@ -28,7 +28,7 @@ module.exports = {
       },
     ],
 
-    'no-nested-ternary': 'warn',
+    'no-nested-ternary': 'off',
     'no-unneeded-ternary': 'warn',
 
     'react/jsx-key': 'warn',
