@@ -1,10 +1,10 @@
 import { RefObject } from 'react'
 
-export type UseEventListenerOptions<E extends Event = Event> =
-  AddEventListenerOptions & {
-    enabled?: boolean
-    filter?: (event: E) => boolean
-  }
+import type { UseEventOptions } from './useEvent'
+
+export interface UseEventListenerOptions<E extends Event = Event>
+  extends UseEventOptions<E>,
+    AddEventListenerOptions {}
 
 /**
  * Tweaked version of `@react-hook/event`, which allows for:
