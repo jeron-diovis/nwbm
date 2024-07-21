@@ -1,16 +1,33 @@
 {
   "name": "@yai/use-event-listener",
-  "license": "MIT",
   "version": "0.0.0",
+  "license": "MIT",
+  "description": "React hook for listening to DOM events",
+  "keywords": [
+    "react",
+    "react hook",
+    "event hook",
+    "use-event",
+    "event-listener",
+    "use-event-listener",
+    "react events hook",
+    "react listener hook"
+  ],
   "type": "module",
   "files": [
     "dist"
   ],
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "scripts": {
     "start": "npm run test:w",
-    "build": "rimraf dist && tsc -p tsconfig.build.json",
+    "build": "vite.build -c vite.config.lib.ts",
     "lint": "npm run lint:js && npm run lint:ts && npm run lint:css",
     "preview": "vite preview",
     "lint:js": "eslint {src,demo,test} --ext .cjs,.js,.jsx,.ts,.tsx --no-error-on-unmatched-pattern",
