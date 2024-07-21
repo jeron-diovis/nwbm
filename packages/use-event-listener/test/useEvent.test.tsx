@@ -1,5 +1,7 @@
 import { EventEmitter } from 'node:events'
 
+import { useRef } from 'react'
+
 import { renderHook } from '@testing-library/react'
 
 import { createUseEvent, useEvent } from '../src'
@@ -34,6 +36,17 @@ describe('useEvent', () => {
         removeListener: emitter.off.bind(emitter),
       }
       renderHook(() => useEvent(proxy, 'click', cb))
+      emitter.emit('click')
+      expect(cb).toHaveBeenCalled()
+    })
+
+    it('should support refs', () => {
+      const cb = vi.fn()
+      const emitter = new EventEmitter()
+      renderHook(() => {
+        const ref = useRef(emitter)
+        useEvent(ref, 'click', cb)
+      })
       emitter.emit('click')
       expect(cb).toHaveBeenCalled()
     })

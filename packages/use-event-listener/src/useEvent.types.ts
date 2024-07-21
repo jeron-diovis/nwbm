@@ -25,30 +25,30 @@ type Emitter3 = {
 }
 
 export type Emitter = Emitter1 | Emitter2 | Emitter3
-//#endregion
 
 // ---
-//#region Normalize Emitter
 
-type GetEmitter<T> = T extends RefObject<infer U> ? U : T
+type InferEmitter<T> = T extends RefObject<infer U> ? U : T
 
-type _NormalizedEmitter<T> = T extends Emitter1
+type NormalizeEmitter<T> = T extends Emitter1
   ? T
   : T extends Emitter2
     ? { on: T['addEventListener']; off: T['removeEventListener'] }
     : T extends Emitter3
       ? { on: T['addListener']; off: T['removeListener'] }
       : never
-
-type NormalizedEmitter<T> = _NormalizedEmitter<GetEmitter<T>>
 //#endregion
+
+type EventTarget = Emitter | RefObject<Emitter>
 
 // ---
 //#region Infer Event params
-type MethodParams<T> = Parameters<NormalizedEmitter<T>['on']>
-export type InferEventNames<T> = MethodParams<T>[0]
-export type InferEventTypes<T> = Parameters<MethodParams<T>[1]>[0]
-export type InferEventOptions<T> = MethodParams<T>[2]
+type EmitterParams<T> = Parameters<NormalizeEmitter<InferEmitter<T>>['on']>
+type InferEventNamesFromTarget<T extends EventTarget> = EmitterParams<T>[0]
+type InferEventTypesFromTarget<T extends EventTarget> = Parameters<
+  EmitterParams<T>[1]
+>[0]
+type InferEventOptionsFromTarget<T extends EventTarget> = EmitterParams<T>[2]
 //#endregion
 
 // ---
@@ -64,14 +64,15 @@ type NormalizeOptions<T, FilterArg> = Omit<T, keyof UseEventOptions> &
 
 //#endregion
 
-type Target = Emitter | RefObject<Emitter>
-
 export interface IUseEvent {
-  <T extends Target>(
+  <T extends EventTarget>(
     target: T,
-    event: MaybeArray<InferEventNames<T>>,
-    callback: (e: InferEventTypes<T>) => void,
-    options?: NormalizeOptions<InferEventOptions<T>, InferEventTypes<T>>
+    event: MaybeArray<InferEventNamesFromTarget<T>>,
+    callback: (e: InferEventTypesFromTarget<T>) => void,
+    options?: NormalizeOptions<
+      InferEventOptionsFromTarget<T>,
+      InferEventTypesFromTarget<T>
+    >
   ): void
 }
 
@@ -89,7 +90,7 @@ type InferEventTypeFromMap<T> = T extends (e: infer U) => any
 
 export interface IUseEventMap<EventMap, Options = object> {
   <E extends keyof EventMap>(
-    target: Emitter,
+    target: EventTarget,
     event: MaybeArray<E>,
     callback: (e: InferEventTypeFromMap<EventMap[E]>) => void,
     options?: NormalizeOptions<Options, InferEventTypeFromMap<EventMap[E]>>
