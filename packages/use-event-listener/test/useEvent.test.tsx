@@ -51,7 +51,7 @@ describe('useEvent', () => {
   it('should not call event handler when "enabled" option is false', () => {
     const cb = vi.fn()
     const emitter = new EventEmitter()
-    renderHook(() => useEvent(emitter, 'click', { enabled: false }, cb))
+    renderHook(() => useEvent(emitter, 'click', cb, { enabled: false }))
     emitter.emit('click')
     expect(cb).not.toHaveBeenCalled()
   })
@@ -59,7 +59,7 @@ describe('useEvent', () => {
   it('should not call event handler when "filter" option returns false', () => {
     const cb = vi.fn()
     const emitter = new EventEmitter()
-    renderHook(() => useEvent(emitter, 'test', { filter: e => e.foo }, cb))
+    renderHook(() => useEvent(emitter, 'test', cb, { filter: e => e.foo }))
     emitter.emit('test', { foo: true })
     emitter.emit('test', { foo: false })
     expect(cb).toHaveBeenCalledTimes(1)
@@ -85,9 +85,10 @@ describe('createUseEvent', () => {
     /* Note all the type inference here.
      * TODO: how to test inference working? */
     renderHook(() =>
-      useEvent(emitter, 'custom', { filter: e => e.foo, myOption: 1 }, e =>
-        cb(e.foo)
-      )
+      useEvent(emitter, 'custom', e => cb(e.foo), {
+        filter: e => e.foo,
+        myOption: 1,
+      })
     )
     emitter.emit('custom', { foo: true })
     expect(cb).toHaveBeenCalled()

@@ -11,7 +11,7 @@ function Demo(props: {
   opts?: UseDomEventOptions
 }) {
   const { eventName, elRef, handler, opts = {} } = props
-  useDomEvent(elRef, eventName as any, opts, handler)
+  useDomEvent(elRef, eventName as any, handler, opts)
   return (
     <div ref={elRef} data-testid="test">
       Test
@@ -69,7 +69,7 @@ describe('useDomEvent', () => {
     const cb = vi.fn()
 
     renderHook(() =>
-      useDomEvent('document', 'keypress', { filter: e => e.key === 'a' }, cb)
+      useDomEvent('document', 'keypress', cb, { filter: e => e.key === 'a' })
     )
     fireEvent.keyPress(document, { key: 'a' })
     fireEvent.keyPress(document, { key: 'b' })

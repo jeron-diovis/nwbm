@@ -1,32 +1,22 @@
 import { useEffect, useRef } from 'react'
 
-import {
-  Emitter,
-  IUseEvent,
-  IUseEventGeneric,
-  UseEventOptions,
-} from './useEvent.types'
+import { Emitter, IUseEvent, IUseEventGeneric } from './useEvent.types'
 
-export const useEvent: IUseEvent = (
-  target,
-  event: unknown,
-  third: unknown,
-  fourth?: unknown
-) => {
+export const useEvent: IUseEvent = (target, event, listener, options) => {
   // ---
   // parse overload params
   type Fn = (...args: any[]) => void
-  let listener: Fn
-  let options: UseEventOptions
-  if (typeof third === 'function') {
-    listener = third as Fn
-    options = {}
-  } else {
-    options = third as UseEventOptions
-    listener = fourth as Fn
-  }
+  // let listener: Fn
+  // let options: UseEventOptions
+  // if (typeof third === 'function') {
+  //   listener = third as Fn
+  //   options = {}
+  // } else {
+  //   options = third as UseEventOptions
+  //   listener = fourth as Fn
+  // }
 
-  const refListener = useRef(listener)
+  const refListener = useRef<Fn>(listener)
   refListener.current = listener
   const refOptions = useRef(options)
   refOptions.current = options
@@ -47,7 +37,7 @@ export const useEvent: IUseEvent = (
 
       const listener = (...args: any[]) => {
         if (!refIsActive.current) return
-        if (refOptions.current.filter?.(args[0]) === false) return
+        if (refOptions.current?.filter?.(args[0]) === false) return
         refListener.current(...args)
       }
 
@@ -69,17 +59,15 @@ export const useEvent: IUseEvent = (
     [
       target,
       Array.isArray(event) ? event.join(' ') : event,
-      refOptions.current.enabled,
+      refOptions.current?.enabled,
     ]
     /* eslint-enable */
   )
 }
 
 //#region createUseEvent
-export const createUseEvent = <EventMap, Options = object>(): IUseEventGeneric<
-  EventMap,
-  Options
-> => useEvent
+export const createUseEvent = <EventMap, Options = object>() =>
+  useEvent as IUseEventGeneric<EventMap, Options>
 //#endregion
 
 // ---

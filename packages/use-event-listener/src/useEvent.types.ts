@@ -70,14 +70,8 @@ export interface IUseEvent {
   <T extends Target>(
     target: T,
     event: MaybeArray<InferEventNames<T>>,
-    callback: (e: InferEventTypes<T>) => void
-  ): void
-
-  <T extends Target>(
-    target: T,
-    event: MaybeArray<InferEventNames<T>>,
-    opts: NormalizeOptions<InferEventOptions<T>, InferEventTypes<T>>,
-    callback: (e: InferEventTypes<T>) => void
+    callback: (e: InferEventTypes<T>) => void,
+    options?: NormalizeOptions<InferEventOptions<T>, InferEventTypes<T>>
   ): void
 }
 
@@ -86,26 +80,19 @@ export interface IUseEvent {
 /* Approach to "EventsMap" type varies from lib to lib.
  * As map values can be either callback function,
  * or array of callback args,
- * or just an event type.
- */
-type InferEventFromMap<T> = T extends (e: infer U) => any
+ * or just an event type. */
+type InferEventTypeFromMap<T> = T extends (e: infer U) => any
   ? U
   : T extends [infer E, ...any[]]
     ? E
-    : never
+    : T
 
 export interface IUseEventGeneric<EventMap, Options = object> {
   <E extends keyof EventMap>(
     target: Emitter,
     event: MaybeArray<E>,
-    callback: (e: InferEventFromMap<EventMap[E]>) => void
-  ): void
-
-  <E extends keyof EventMap>(
-    target: Emitter,
-    event: MaybeArray<E>,
-    opts: NormalizeOptions<Options, InferEventFromMap<EventMap[E]>>,
-    callback: (e: InferEventFromMap<EventMap[E]>) => void
+    callback: (e: InferEventTypeFromMap<EventMap[E]>) => void,
+    options?: NormalizeOptions<Options, InferEventTypeFromMap<EventMap[E]>>
   ): void
 }
 
