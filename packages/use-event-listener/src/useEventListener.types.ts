@@ -1,6 +1,6 @@
 import { RefObject } from 'react'
 
-import type { UseEventOptions } from './useEvent'
+import { UseEventOptions } from './useEvent.types'
 
 export interface UseEventListenerOptions<E extends Event = Event>
   extends UseEventOptions<E>,
