@@ -28,6 +28,7 @@
   "scripts": {
     "start": "npm run test:w",
     "build": "vite build -c vite.config.lib.ts",
+    "stat": "vite-bundle-visualizer -c vite.config.lib.ts -o stats/stats.html",
     "lint": "npm run lint:js && npm run lint:ts && npm run lint:css",
     "preview": "vite preview",
     "lint:js": "eslint {src,demo,test} --ext .cjs,.js,.jsx,.ts,.tsx --no-error-on-unmatched-pattern",

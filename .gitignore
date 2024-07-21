@@ -28,3 +28,4 @@ dist-ssr
 
 # Symlink to the root config
 /packages/**/.vite-root
+/packages/**/stats

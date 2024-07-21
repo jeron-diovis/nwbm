@@ -11,9 +11,9 @@
   "scripts": {
     "start": "vite",
     "build": "vite build -c vite.config.lib.ts",
+    "stat": "vite-bundle-visualizer -c vite.config.lib.ts -o stats/stats.html",
     "lint": "npm run lint:js && npm run lint:ts && npm run lint:css",
     "preview": "vite preview",
-    "stat": "./view-stats.sh",
     "lint:js": "eslint {src,demo} --ext .cjs,.js,.jsx,.ts,.tsx --no-error-on-unmatched-pattern",
     "lint:ts": "tsc --noEmit",
     "lint:css": "stylelint \"{src,demo}/**/*.{s,}css\" --aei",

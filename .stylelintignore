@@ -6,6 +6,7 @@
 
 node_modules
 dist
+stats
 
 # any 3-party styles which has to be added as-is
 src/styles/vendor
