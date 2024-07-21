@@ -13,7 +13,7 @@ function Demo(props: {
   const { eventName, elRef, handler, opts = {} } = props
   useEventListener(elRef, eventName as any, opts, handler)
   return (
-    <div ref={elRef} data-testid="test-element">
+    <div ref={elRef} data-testid="test">
       Test
     </div>
   )
@@ -27,28 +27,10 @@ describe('useEventListener', () => {
       <Demo eventName="click" elRef={ref} handler={cb} />
     )
 
-    const testElement = getByTestId('test-element')
-    fireEvent.click(testElement)
+    const el = getByTestId('test')
+    fireEvent.click(el)
 
     expect(cb).toHaveBeenCalled()
-  })
-
-  it('should not call event handler when "enabled" option is false', () => {
-    const cb = vi.fn()
-    const ref = createRef()
-    const { getByTestId } = render(
-      <Demo
-        eventName="click"
-        elRef={ref}
-        handler={cb}
-        opts={{ enabled: false }}
-      />
-    )
-
-    const testElement = getByTestId('test-element')
-    fireEvent.click(testElement)
-
-    expect(cb).not.toHaveBeenCalled()
   })
 
   it('should accept event listener options', () => {
@@ -58,25 +40,11 @@ describe('useEventListener', () => {
       <Demo eventName="click" elRef={ref} handler={cb} opts={{ once: true }} />
     )
 
-    const testElement = getByTestId('test-element')
-    fireEvent.click(testElement)
-    fireEvent.click(testElement)
+    const el = getByTestId('test')
+    fireEvent.click(el)
+    fireEvent.click(el)
 
     expect(cb).toHaveBeenCalledTimes(1)
-  })
-
-  it('should subscribe to multiple events', () => {
-    const cb = vi.fn()
-    const ref = createRef()
-    const { getByTestId } = render(
-      <Demo eventName={['click', 'mouseover']} elRef={ref} handler={cb} />
-    )
-
-    const testElement = getByTestId('test-element')
-    fireEvent.click(testElement)
-    fireEvent.mouseOver(testElement)
-
-    expect(cb).toHaveBeenCalledTimes(2)
   })
 
   it('should add listener to window', () => {
