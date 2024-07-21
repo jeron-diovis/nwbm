@@ -30,7 +30,7 @@ describe('useEventListener', () => {
     const testElement = getByTestId('test-element')
     fireEvent.click(testElement)
 
-    expect(cb).toBeCalled()
+    expect(cb).toHaveBeenCalled()
   })
 
   it('should not call event handler when condition is false', () => {
@@ -43,7 +43,7 @@ describe('useEventListener', () => {
     const testElement = getByTestId('test-element')
     fireEvent.click(testElement)
 
-    expect(cb).not.toBeCalled()
+    expect(cb).not.toHaveBeenCalled()
   })
 
   it('should accept event listener options', () => {
@@ -57,7 +57,7 @@ describe('useEventListener', () => {
     fireEvent.click(testElement)
     fireEvent.click(testElement)
 
-    expect(cb).toBeCalledTimes(1)
+    expect(cb).toHaveBeenCalledTimes(1)
   })
 
   it('should subscribe to multiple events', () => {
@@ -71,7 +71,7 @@ describe('useEventListener', () => {
     fireEvent.click(testElement)
     fireEvent.mouseOver(testElement)
 
-    expect(cb).toBeCalledTimes(2)
+    expect(cb).toHaveBeenCalledTimes(2)
   })
 
   it('should add listener to window', () => {
@@ -80,7 +80,7 @@ describe('useEventListener', () => {
     renderHook(() => useEventListener('window', 'click', cb))
     fireEvent.click(window)
 
-    expect(cb).toBeCalled()
+    expect(cb).toHaveBeenCalled()
   })
 
   it('should add listener to document', () => {
@@ -89,6 +89,6 @@ describe('useEventListener', () => {
     renderHook(() => useEventListener('document', 'click', cb))
     fireEvent.click(document)
 
-    expect(cb).toBeCalled()
+    expect(cb).toHaveBeenCalled()
   })
 })
