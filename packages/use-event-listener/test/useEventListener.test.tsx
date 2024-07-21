@@ -91,4 +91,21 @@ describe('useEventListener', () => {
 
     expect(cb).toHaveBeenCalled()
   })
+
+  it('should not execute listener if "filter" option returns false', () => {
+    const cb = vi.fn()
+
+    renderHook(() =>
+      useEventListener(
+        'document',
+        'keypress',
+        { filter: e => e.key === 'a' },
+        cb
+      )
+    )
+    fireEvent.keyPress(document, { key: 'a' })
+    fireEvent.keyPress(document, { key: 'b' })
+
+    expect(cb).toHaveBeenCalledTimes(1)
+  })
 })

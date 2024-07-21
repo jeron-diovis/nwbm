@@ -1,8 +1,10 @@
 import { RefObject, useEffect, useRef } from 'react'
 
-export type UseEventListenerOptions = AddEventListenerOptions & {
-  when?: boolean
-}
+export type UseEventListenerOptions<E extends Event = Event> =
+  AddEventListenerOptions & {
+    when?: boolean
+    filter?: (event: E) => boolean
+  }
 
 /**
  * Tweaked version of `@react-hook/event`, which allows for:
@@ -22,7 +24,7 @@ type IUseEventListener = {
   <T extends HTMLElement, E extends keyof HTMLElementEventMap>(
     el: RefOrVal<T>,
     event: E | E[],
-    options: UseEventListenerOptions,
+    options: UseEventListenerOptions<HTMLElementEventMap[E]>,
     callback: ElementListener<E>
   ): void
 
@@ -35,7 +37,7 @@ type IUseEventListener = {
   <E extends keyof WindowEventMap>(
     el: 'window',
     event: E | E[],
-    options: UseEventListenerOptions,
+    options: UseEventListenerOptions<WindowEventMap[E]>,
     callback: WindowListener<E>
   ): void
 
@@ -48,7 +50,7 @@ type IUseEventListener = {
   <E extends keyof DocumentEventMap>(
     el: 'document',
     event: E | E[],
-    options: UseEventListenerOptions,
+    options: UseEventListenerOptions<DocumentEventMap[E]>,
     callback: DocumentListener<E>
   ): void
 }
@@ -123,6 +125,7 @@ export const useEventListener: IUseEventListener = (
       const listener = (...args: any[]) => {
         // ignore bubbling event if component was already unmounted or subscription changed
         if (!refIsActive.current) return
+        if (refOptions.current.filter?.(args[0]) === false) return
         refListener.current(...args)
       }
 
