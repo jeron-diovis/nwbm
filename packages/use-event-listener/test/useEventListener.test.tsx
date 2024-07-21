@@ -33,11 +33,16 @@ describe('useEventListener', () => {
     expect(cb).toHaveBeenCalled()
   })
 
-  it('should not call event handler when condition is false', () => {
+  it('should not call event handler when "enabled" option is false', () => {
     const cb = vi.fn()
     const ref = createRef()
     const { getByTestId } = render(
-      <Demo eventName="click" elRef={ref} handler={cb} opts={{ when: false }} />
+      <Demo
+        eventName="click"
+        elRef={ref}
+        handler={cb}
+        opts={{ enabled: false }}
+      />
     )
 
     const testElement = getByTestId('test-element')

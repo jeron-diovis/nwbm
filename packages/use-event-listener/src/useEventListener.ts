@@ -2,7 +2,7 @@ import { RefObject, useEffect, useRef } from 'react'
 
 export type UseEventListenerOptions<E extends Event = Event> =
   AddEventListenerOptions & {
-    when?: boolean
+    enabled?: boolean
     filter?: (event: E) => boolean
   }
 
@@ -117,8 +117,8 @@ export const useEventListener: IUseEventListener = (
 
       if (el === null) return undefined
 
-      const { when, ...listenerOptions } = refOptions.current ?? {}
-      if (when === false) return undefined
+      const { enabled, ...listenerOptions } = refOptions.current ?? {}
+      if (enabled === false) return undefined
 
       refIsActive.current = true
 
@@ -146,7 +146,7 @@ export const useEventListener: IUseEventListener = (
       target,
       Array.isArray(event) ? event.join(' ') : event,
       /* Depend only on this option – as it's the one meant to disable the entire things */
-      refOptions.current.when,
+      refOptions.current.enabled,
     ]
     /* eslint-enable */
   )
