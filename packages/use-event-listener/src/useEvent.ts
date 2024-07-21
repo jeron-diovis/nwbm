@@ -2,24 +2,15 @@ import { useEffect, useRef } from 'react'
 
 import { Emitter, IUseEvent, IUseEventGeneric } from './useEvent.types'
 
-export const useEvent: IUseEvent = (target, event, listener, options) => {
-  // ---
-  // parse overload params
-  type Fn = (...args: any[]) => void
-  // let listener: Fn
-  // let options: UseEventOptions
-  // if (typeof third === 'function') {
-  //   listener = third as Fn
-  //   options = {}
-  // } else {
-  //   options = third as UseEventOptions
-  //   listener = fourth as Fn
-  // }
+type Fn = (...args: any[]) => void
 
+export const useEvent: IUseEvent = (target, event, listener, options) => {
   const refListener = useRef<Fn>(listener)
-  refListener.current = listener
   const refOptions = useRef(options)
-  refOptions.current = options
+  useEffect(() => {
+    refListener.current = listener
+    refOptions.current = options
+  })
 
   const refIsActive = useRef(true)
 
@@ -72,8 +63,6 @@ export const createUseEvent = <EventMap, Options = object>() =>
 
 // ---
 //#region generic sub/unsub
-
-type Fn = (...args: any[]) => void
 
 function sub(target: Emitter, ...args: any[]) {
   if ('on' in target) {
