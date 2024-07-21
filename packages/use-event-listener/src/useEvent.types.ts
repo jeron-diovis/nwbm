@@ -2,32 +2,26 @@ import { RefObject } from 'react'
 
 // ---
 //#region Emitter
-
-type FnSub = (
-  type: unknown,
-  listener: (...args: any[]) => void,
-  options?: unknown
-) => void
-
-type FnUnSub = (
-  type: unknown,
-  listener: (...args: any[]) => void,
-  options?: unknown
+type FnSubUnsub = (
+  type: string,
+  callback: (...args: any[]) => void,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  options?: any
 ) => void
 
 type Emitter1 = {
-  on: FnSub
-  off: FnUnSub
+  on: FnSubUnsub
+  off: FnSubUnsub
 }
 
 type Emitter2 = {
-  addEventListener: FnSub
-  removeEventListener: FnUnSub
+  addEventListener: FnSubUnsub
+  removeEventListener: FnSubUnsub
 }
 
 type Emitter3 = {
-  addListener: FnSub
-  removeListener: FnUnSub
+  addListener: FnSubUnsub
+  removeListener: FnSubUnsub
 }
 
 export type Emitter = Emitter2 | Emitter1 | Emitter3
