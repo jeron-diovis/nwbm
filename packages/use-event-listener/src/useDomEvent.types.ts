@@ -2,7 +2,7 @@ import { RefObject } from 'react'
 
 import { UseEventOptions } from './useEvent.types'
 
-export interface UseEventListenerOptions<E extends Event = Event>
+export interface UseDomEventOptions<E extends Event = Event>
   extends UseEventOptions<E>,
     AddEventListenerOptions {}
 
@@ -14,7 +14,7 @@ export interface UseEventListenerOptions<E extends Event = Event>
  *
  * @see https://github.com/jaredLunde/react-hook/blob/master/packages/event/README.md
  */
-export interface IUseEventListener {
+export interface IUseDomEvent {
   <T extends HTMLElement, E extends keyof HTMLElementEventMap>(
     el: RefOrVal<T>,
     event: E | E[],
@@ -24,7 +24,7 @@ export interface IUseEventListener {
   <T extends HTMLElement, E extends keyof HTMLElementEventMap>(
     el: RefOrVal<T>,
     event: E | E[],
-    options: UseEventListenerOptions<HTMLElementEventMap[E]>,
+    options: UseDomEventOptions<HTMLElementEventMap[E]>,
     callback: ElementListener<E>
   ): void
 
@@ -37,7 +37,7 @@ export interface IUseEventListener {
   <E extends keyof WindowEventMap>(
     el: 'window',
     event: E | E[],
-    options: UseEventListenerOptions<WindowEventMap[E]>,
+    options: UseDomEventOptions<WindowEventMap[E]>,
     callback: WindowListener<E>
   ): void
 
@@ -50,7 +50,7 @@ export interface IUseEventListener {
   <E extends keyof DocumentEventMap>(
     el: 'document',
     event: E | E[],
-    options: UseEventListenerOptions<DocumentEventMap[E]>,
+    options: UseDomEventOptions<DocumentEventMap[E]>,
     callback: DocumentListener<E>
   ): void
 }

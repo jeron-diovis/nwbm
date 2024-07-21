@@ -1,14 +1,11 @@
 import { useRef } from 'react'
 
+import { IUseDomEvent, RefOrVal } from './useDomEvent.types'
 import { useEvent } from './useEvent'
-import { IUseEventListener, RefOrVal } from './useEventListener.types'
 
 type Target = RefOrVal<HTMLElement> | 'window' | 'document'
 
-export const useEventListener: IUseEventListener = (
-  target: Target,
-  ...args: any[]
-) => {
+export const useDomEvent: IUseDomEvent = (target: Target, ...args: any[]) => {
   const refBrowserGlobal = useRef(resolveBrowserGlobal(target))
   const el =
     target === 'window' || target === 'document' ? refBrowserGlobal : target

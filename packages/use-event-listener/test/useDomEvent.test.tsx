@@ -2,16 +2,16 @@ import { RefObject, createRef } from 'react'
 
 import { fireEvent, render, renderHook } from '@testing-library/react'
 
-import { UseEventListenerOptions, useEventListener } from '../src'
+import { UseDomEventOptions, useDomEvent } from '../src'
 
 function Demo(props: {
   eventName: string | string[]
   elRef: RefObject<any>
   handler: (event: Event) => void
-  opts?: UseEventListenerOptions
+  opts?: UseDomEventOptions
 }) {
   const { eventName, elRef, handler, opts = {} } = props
-  useEventListener(elRef, eventName as any, opts, handler)
+  useDomEvent(elRef, eventName as any, opts, handler)
   return (
     <div ref={elRef} data-testid="test">
       Test
@@ -19,7 +19,7 @@ function Demo(props: {
   )
 }
 
-describe('useEventListener', () => {
+describe('useDomEvent', () => {
   it('should call event handler when event occurs', () => {
     const cb = vi.fn()
     const ref = createRef()
@@ -50,7 +50,7 @@ describe('useEventListener', () => {
   it('should add listener to window', () => {
     const cb = vi.fn()
 
-    renderHook(() => useEventListener('window', 'click', cb))
+    renderHook(() => useDomEvent('window', 'click', cb))
     fireEvent.click(window)
 
     expect(cb).toHaveBeenCalled()
@@ -59,7 +59,7 @@ describe('useEventListener', () => {
   it('should add listener to document', () => {
     const cb = vi.fn()
 
-    renderHook(() => useEventListener('document', 'click', cb))
+    renderHook(() => useDomEvent('document', 'click', cb))
     fireEvent.click(document)
 
     expect(cb).toHaveBeenCalled()
@@ -69,12 +69,7 @@ describe('useEventListener', () => {
     const cb = vi.fn()
 
     renderHook(() =>
-      useEventListener(
-        'document',
-        'keypress',
-        { filter: e => e.key === 'a' },
-        cb
-      )
+      useDomEvent('document', 'keypress', { filter: e => e.key === 'a' }, cb)
     )
     fireEvent.keyPress(document, { key: 'a' })
     fireEvent.keyPress(document, { key: 'b' })

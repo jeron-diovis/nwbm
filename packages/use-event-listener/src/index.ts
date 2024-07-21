@@ -5,8 +5,5 @@ export type {
   UseEventOptions,
 } from './useEvent.types'
 
-export * from './useEventListener'
-export type {
-  IUseEventListener,
-  UseEventListenerOptions,
-} from './useEventListener.types'
+export * from './useDomEvent'
+export type { IUseDomEvent, UseDomEventOptions } from './useDomEvent.types'
