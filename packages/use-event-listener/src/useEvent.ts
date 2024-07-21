@@ -76,7 +76,7 @@ export const useEvent: IUseEvent = (
 }
 
 //#region createUseEvent
-export const createUseEvent = <EventMap, Options = never>(): IUseEventGeneric<
+export const createUseEvent = <EventMap, Options = object>(): IUseEventGeneric<
   EventMap,
   Options
 > => useEvent

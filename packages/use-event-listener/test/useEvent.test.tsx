@@ -2,7 +2,7 @@ import { EventEmitter } from 'node:events'
 
 import { renderHook } from '@testing-library/react'
 
-import { useEvent } from '../src'
+import { createUseEvent, useEvent } from '../src'
 
 describe('useEvent', () => {
   describe('subscription interface', () => {
@@ -63,5 +63,33 @@ describe('useEvent', () => {
     emitter.emit('test', { foo: true })
     emitter.emit('test', { foo: false })
     expect(cb).toHaveBeenCalledTimes(1)
+  })
+})
+
+describe('createUseEvent', () => {
+  it('should create a typed useEvent hook', () => {
+    type MyEvent = {
+      foo: boolean
+    }
+    type EventsMap = {
+      custom: (e: MyEvent) => void
+    }
+    type MyListenerOptions = {
+      myOption?: number
+    }
+    const useEvent = createUseEvent<EventsMap, MyListenerOptions>()
+    expect(typeof useEvent).toBe('function')
+
+    const cb = vi.fn()
+    const emitter = new EventEmitter()
+    /* Note all the type inference here.
+     * TODO: how to test inference working? */
+    renderHook(() =>
+      useEvent(emitter, 'custom', { filter: e => e.foo, myOption: 1 }, e =>
+        cb(e.foo)
+      )
+    )
+    emitter.emit('custom', { foo: true })
+    expect(cb).toHaveBeenCalled()
   })
 })

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { RefObject } from 'react'
 
 // ---
@@ -5,7 +6,6 @@ import { RefObject } from 'react'
 type FnSubUnsub = (
   type: string,
   callback: (...args: any[]) => void,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   options?: any
 ) => void
 
@@ -45,14 +45,10 @@ type NormalizedEmitter<T> = _NormalizedEmitter<GetEmitter<T>>
 
 // ---
 //#region Infer Event params
-
-export type InferEventNames<T> = Parameters<NormalizedEmitter<T>['on']>[0]
-
-export type InferEventTypes<T> = Parameters<
-  Parameters<NormalizedEmitter<T>['on']>[1]
->[0]
-
-export type InferEventOptions<T> = Parameters<NormalizedEmitter<T>['on']>[2]
+type MethodParams<T> = Parameters<NormalizedEmitter<T>['on']>
+export type InferEventNames<T> = MethodParams<T>[0]
+export type InferEventTypes<T> = Parameters<MethodParams<T>[1]>[0]
+export type InferEventOptions<T> = MethodParams<T>[2]
 //#endregion
 
 // ---
@@ -85,18 +81,22 @@ export interface IUseEvent {
   ): void
 }
 
-export interface IUseEventGeneric<EventMap, Options = never> {
+// ---
+
+type InferEventFromMap<T> = T extends (e: infer U) => any ? U : T
+
+export interface IUseEventGeneric<EventMap, Options = object> {
   <E extends keyof EventMap>(
     target: Emitter,
     event: MaybeArray<E>,
-    callback: (e: EventMap[E]) => void
+    callback: (e: InferEventFromMap<EventMap[E]>) => void
   ): void
 
   <E extends keyof EventMap>(
     target: Emitter,
     event: MaybeArray<E>,
-    opts: NormalizeOptions<Options, EventMap[E]>,
-    callback: (e: EventMap[E]) => void
+    opts: NormalizeOptions<Options, InferEventFromMap<EventMap[E]>>,
+    callback: (e: InferEventFromMap<EventMap[E]>) => void
   ): void
 }
 
