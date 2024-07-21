@@ -3,6 +3,9 @@ import sysPath from 'path'
 import { defineConfig as defineBaseConfig, useLint } from './.vite-root'
 import pkg from './package.json'
 
+/**
+ * Shared options for both app and library modes.
+ */
 export const defineConfig = defineBaseConfig.extend([
   useLint({
     eslint: pkg.scripts['lint:js'],
@@ -17,4 +20,7 @@ export const defineConfig = defineBaseConfig.extend([
   },
 ])
 
+/**
+ * Options specific for app mode
+ */
 export default defineConfig({})

@@ -1,6 +1,7 @@
 import { useChunks } from 'vite-split-config'
 
 import { useBuildAnalysis } from './cfg.build-analysis'
+import { useBuildLib } from './cfg.build-lib'
 import { useLint } from './cfg.lint'
 import { useModularImports } from './cfg.modular-imports'
 import { useReact } from './cfg.react'
@@ -14,6 +15,7 @@ export {
   useCSS,
   useTests,
   useBuildAnalysis,
+  useBuildLib,
 }
 
 export const defineConfig = useChunks([
