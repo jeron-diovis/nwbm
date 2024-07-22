@@ -1,8 +1,8 @@
 {
-  "name": "@yai/use-event-listener",
+  "name": "@yai/use-event",
   "version": "0.0.0",
   "license": "MIT",
-  "description": "React hook for listening to DOM events",
+  "description": "React hook for listening to events",
   "keywords": [
     "react",
     "react hook",
