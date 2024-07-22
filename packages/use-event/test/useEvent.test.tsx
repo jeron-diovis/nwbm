@@ -4,7 +4,7 @@ import { useRef } from 'react'
 
 import { renderHook } from '@testing-library/react'
 
-import { createUseEvent, useEvent } from '../src'
+import { IUseEvent, useEvent } from '../src'
 
 describe('useEvent', () => {
   describe('subscription interface', () => {
@@ -79,10 +79,10 @@ describe('useEvent', () => {
     emitter.emit('test', { foo: false })
     expect(cb).toHaveBeenCalledTimes(1)
   })
-})
 
-describe('createUseEvent', () => {
-  it('should create a typed useEvent hook', () => {
+  /* TODO: how to actually _test_ that inference is working properly?
+   *  (aside of failing tscheck on precommit) */
+  it('should define a custom-typed useEvent hook', () => {
     type MyEvent = {
       foo: boolean
     }
@@ -92,15 +92,14 @@ describe('createUseEvent', () => {
     type MyListenerOptions = {
       myOption?: number
     }
-    const useEvent = createUseEvent<EventsMap, MyListenerOptions>()
-    expect(typeof useEvent).toBe('function')
+
+    const useMyEvent: IUseEvent<EventsMap, MyListenerOptions> = useEvent
 
     const cb = vi.fn()
     const emitter = new EventEmitter()
-    /* Note all the type inference here.
-     * TODO: how to test inference working? */
+    /* Note all the type inference on params and options here. */
     renderHook(() =>
-      useEvent(emitter, 'custom', e => cb(e.foo), {
+      useMyEvent(emitter, 'custom', e => cb(e.foo), {
         filter: e => e.foo,
         myOption: 1,
       })

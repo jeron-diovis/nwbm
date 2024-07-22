@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react'
 
-import { Emitter, IUseEvent, IUseEventMap } from './useEvent.types'
+import { Emitter, IUseEvent } from './useEvent.types'
 
 type Fn = (...args: any[]) => void
 
@@ -50,16 +50,12 @@ export const useEvent: IUseEvent = (target, event, listener, options) => {
     [
       target,
       Array.isArray(event) ? event.join(' ') : event,
+      /* Depend only on this option, as it's specially meant to change behavior of effect */
       refOptions.current?.enabled,
     ]
     /* eslint-enable */
   )
 }
-
-//#region createUseEvent
-export const createUseEvent = <EventMap, Options = object>() =>
-  useEvent as IUseEventMap<EventMap, Options>
-//#endregion
 
 // ---
 //#region generic sub/unsub

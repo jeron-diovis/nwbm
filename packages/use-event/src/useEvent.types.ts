@@ -44,11 +44,22 @@ type EventTarget = Emitter | RefObject<Emitter>
 // ---
 //#region Infer Event params
 type EmitterParams<T> = Parameters<NormalizeEmitter<InferEmitter<T>>['on']>
-// type InferEventNamesFromTarget<T extends EventTarget> = EmitterParams<T>[0]
-type InferEventTypesFromTarget<T extends EventTarget> = Parameters<
+type GetEventTypeFromTarget<T extends EventTarget> = Parameters<
   EmitterParams<T>[1]
 >[0]
-type InferEventOptionsFromTarget<T extends EventTarget> = EmitterParams<T>[2]
+type GetEventOptionsFromTarget<T extends EventTarget> = EmitterParams<T>[2]
+
+type GetEventNameConstraint<EventMap> = keyof EventMap extends never
+  ? string
+  : keyof EventMap
+
+type GetEventType<
+  EventMap,
+  Event,
+  Target extends EventTarget,
+> = Event extends keyof EventMap
+  ? NormalizeEventFromEventMap<EventMap[Event]>
+  : GetEventTypeFromTarget<Target>
 //#endregion
 
 // ---
@@ -59,39 +70,17 @@ export type UseEventOptions<FilterArg = unknown> = {
   filter?: (e: FilterArg) => boolean
 }
 
-type EnsureObject<T> = [T] extends [never] ? object : T
-type NormalizeOptions<T, FilterArg> = Omit<
-  EnsureObject<Extract<T, object>>,
-  keyof UseEventOptions
-> &
-  UseEventOptions<FilterArg>
+type NormalizeOptions<T, FilterArg> = UseEventOptions<FilterArg> &
+  /* Hook special options must never be overridden by listener options.
+   * (which is quite unlikely, but still should be considered) */
+  Omit<
+    /* Exclude any non-object option values –
+     * like the `capture: boolean` overload for AddEventListenerOptions */
+    Default<Extract<T, object>, object>,
+    keyof UseEventOptions
+  >
 
 //#endregion
-
-/*export interface IUseEvent {
-  <T extends EventTarget>(
-    target: T | null,
-    event: MaybeArray<InferEventNamesFromTarget<T>>,
-    callback: (e: InferEventTypesFromTarget<T>) => void,
-    options?: NormalizeOptions<
-      InferEventOptionsFromTarget<T>,
-      InferEventTypesFromTarget<T>
-    >
-  ): void
-}*/
-
-type GetEventNameConstraint<M> = keyof M extends never ? string : keyof M
-// type GetEventName<M> = [M] extends [never] ? string : keyof M
-type GetEventType<M, E, T extends EventTarget> = E extends keyof M
-  ? NormalizeEventFromEventMap<M[E]>
-  : InferEventTypesFromTarget<T>
-
-// type GetEventOptions<O, T extends EventTarget> = never extends O
-//   ? InferEventOptionsFromTarget<T>
-//   : O
-type GetEventOptions<O, T extends EventTarget> = [O] extends [never]
-  ? InferEventOptionsFromTarget<T>
-  : O
 
 export interface IUseEvent<
   EventMap extends object = object,
@@ -100,36 +89,27 @@ export interface IUseEvent<
   <Event extends GetEventNameConstraint<EventMap>, Target extends EventTarget>(
     target: Target | null,
     event: MaybeArray<Event>,
-    // callback: (e: InferEventTypeFromMap<M[E]>) => void,
     callback: (e: GetEventType<EventMap, Event, Target>) => void,
-    // options?: NormalizeOptions<Options, InferEventTypeFromMap<M[E]>>
     options?: NormalizeOptions<
-      GetEventOptions<Options, Target>,
+      Default<Options, GetEventOptionsFromTarget<Target>>,
       GetEventType<EventMap, Event, Target>
     >
   ): void
 }
 
 // ---
+//#region utils
+type MaybeArray<T> = T | T[]
+
+type Default<T, D> = [T] extends [never] ? D : T
 
 /* Approach to "EventsMap" type varies from lib to lib.
- * As map values can be either callback function,
- * or array of callback args,
+ * As map values can be either a callback function,
+ * or an array of callback args,
  * or just an event type. */
 type NormalizeEventFromEventMap<T> = T extends (e: infer U) => any
   ? U
   : T extends [infer E, ...any[]]
     ? E
     : T
-
-export interface IUseEventMap<EventMap, Options = object> {
-  <E extends keyof EventMap>(
-    target: EventTarget | null,
-    event: MaybeArray<E>,
-    callback: (e: NormalizeEventFromEventMap<EventMap[E]>) => void,
-    options?: NormalizeOptions<Options, NormalizeEventFromEventMap<EventMap[E]>>
-  ): void
-}
-
-// ---
-type MaybeArray<T> = T | T[]
+//#endregion
