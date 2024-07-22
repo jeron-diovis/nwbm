@@ -16,16 +16,10 @@ export interface UseDomEventOptions<E extends Event = Event>
  */
 export interface IUseDomEvent {
   <T extends HTMLElement, E extends keyof HTMLElementEventMap>(
-    el: RefOrVal<T>,
+    el: RefOrVal<T> | null,
     event: E | E[],
     callback: ElementListener<E>,
     options?: UseDomEventOptions<HTMLElementEventMap[E]>
-  ): void
-
-  <E extends keyof WindowEventMap>(
-    el: 'window', // use string instead of actual value to make it SSR-safe, by resolving value lazily inside useEffect
-    event: E | E[],
-    callback: WindowListener<E>
   ): void
 
   <E extends keyof WindowEventMap>(

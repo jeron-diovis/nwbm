@@ -66,7 +66,7 @@ type NormalizeOptions<T, FilterArg> = Omit<T, keyof UseEventOptions> &
 
 export interface IUseEvent {
   <T extends EventTarget>(
-    target: T,
+    target: T | null,
     event: MaybeArray<InferEventNamesFromTarget<T>>,
     callback: (e: InferEventTypesFromTarget<T>) => void,
     options?: NormalizeOptions<
@@ -90,7 +90,7 @@ type InferEventTypeFromMap<T> = T extends (e: infer U) => any
 
 export interface IUseEventMap<EventMap, Options = object> {
   <E extends keyof EventMap>(
-    target: EventTarget,
+    target: EventTarget | null,
     event: MaybeArray<E>,
     callback: (e: InferEventTypeFromMap<EventMap[E]>) => void,
     options?: NormalizeOptions<Options, InferEventTypeFromMap<EventMap[E]>>
