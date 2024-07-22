@@ -4,7 +4,7 @@ import { RefObject } from 'react'
 // ---
 //#region Emitter
 type FnSubUnsub = (
-  type: string,
+  type: any,
   callback: (...args: any[]) => void,
   options?: any
 ) => void
@@ -59,7 +59,11 @@ export type UseEventOptions<FilterArg = unknown> = {
   filter?: (e: FilterArg) => boolean
 }
 
-type NormalizeOptions<T, FilterArg> = Omit<T, keyof UseEventOptions> &
+type EnsureObject<T> = [T] extends [never] ? object : T
+type NormalizeOptions<T, FilterArg> = Omit<
+  EnsureObject<Extract<T, object>>,
+  keyof UseEventOptions
+> &
   UseEventOptions<FilterArg>
 
 //#endregion
