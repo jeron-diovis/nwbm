@@ -72,7 +72,9 @@ describe('useEvent', () => {
   it('should not call event handler when "filter" option returns false', () => {
     const cb = vi.fn()
     const emitter = new EventEmitter()
-    renderHook(() => useEvent(emitter, 'test', cb, { filter: e => e.foo }))
+    renderHook(() =>
+      useEvent(emitter, 'test', e => cb(e.foo), { filter: e => e.foo })
+    )
     emitter.emit('test', { foo: true })
     emitter.emit('test', { foo: false })
     expect(cb).toHaveBeenCalledTimes(1)

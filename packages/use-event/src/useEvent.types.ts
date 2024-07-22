@@ -44,7 +44,7 @@ type EventTarget = Emitter | RefObject<Emitter>
 // ---
 //#region Infer Event params
 type EmitterParams<T> = Parameters<NormalizeEmitter<InferEmitter<T>>['on']>
-type InferEventNamesFromTarget<T extends EventTarget> = EmitterParams<T>[0]
+// type InferEventNamesFromTarget<T extends EventTarget> = EmitterParams<T>[0]
 type InferEventTypesFromTarget<T extends EventTarget> = Parameters<
   EmitterParams<T>[1]
 >[0]
@@ -68,7 +68,7 @@ type NormalizeOptions<T, FilterArg> = Omit<
 
 //#endregion
 
-export interface IUseEvent {
+/*export interface IUseEvent {
   <T extends EventTarget>(
     target: T | null,
     event: MaybeArray<InferEventNamesFromTarget<T>>,
@@ -76,6 +76,36 @@ export interface IUseEvent {
     options?: NormalizeOptions<
       InferEventOptionsFromTarget<T>,
       InferEventTypesFromTarget<T>
+    >
+  ): void
+}*/
+
+type GetEventNameConstraint<M> = keyof M extends never ? string : keyof M
+// type GetEventName<M> = [M] extends [never] ? string : keyof M
+type GetEventType<M, E, T extends EventTarget> = E extends keyof M
+  ? NormalizeEventFromEventMap<M[E]>
+  : InferEventTypesFromTarget<T>
+
+// type GetEventOptions<O, T extends EventTarget> = never extends O
+//   ? InferEventOptionsFromTarget<T>
+//   : O
+type GetEventOptions<O, T extends EventTarget> = [O] extends [never]
+  ? InferEventOptionsFromTarget<T>
+  : O
+
+export interface IUseEvent<
+  EventMap extends object = object,
+  Options extends object = never,
+> {
+  <Event extends GetEventNameConstraint<EventMap>, Target extends EventTarget>(
+    target: Target | null,
+    event: MaybeArray<Event>,
+    // callback: (e: InferEventTypeFromMap<M[E]>) => void,
+    callback: (e: GetEventType<EventMap, Event, Target>) => void,
+    // options?: NormalizeOptions<Options, InferEventTypeFromMap<M[E]>>
+    options?: NormalizeOptions<
+      GetEventOptions<Options, Target>,
+      GetEventType<EventMap, Event, Target>
     >
   ): void
 }
@@ -86,7 +116,7 @@ export interface IUseEvent {
  * As map values can be either callback function,
  * or array of callback args,
  * or just an event type. */
-type InferEventTypeFromMap<T> = T extends (e: infer U) => any
+type NormalizeEventFromEventMap<T> = T extends (e: infer U) => any
   ? U
   : T extends [infer E, ...any[]]
     ? E
@@ -96,8 +126,8 @@ export interface IUseEventMap<EventMap, Options = object> {
   <E extends keyof EventMap>(
     target: EventTarget | null,
     event: MaybeArray<E>,
-    callback: (e: InferEventTypeFromMap<EventMap[E]>) => void,
-    options?: NormalizeOptions<Options, InferEventTypeFromMap<EventMap[E]>>
+    callback: (e: NormalizeEventFromEventMap<EventMap[E]>) => void,
+    options?: NormalizeOptions<Options, NormalizeEventFromEventMap<EventMap[E]>>
   ): void
 }
 
