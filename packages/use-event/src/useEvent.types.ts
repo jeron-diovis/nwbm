@@ -59,7 +59,10 @@ type GetEventType<EventsMap, Event, Target extends EventTarget> = IfAny<
   EventsMap,
   GetEventTypeFromTarget<Target>,
   Event extends keyof EventsMap
-    ? NormalizeEventFromEventsMap<EventsMap[Event]>
+    ? /* Some event maps are defined in "{ name?: callback }" format.
+       * Inferring event type from an optional callback will result in an optional value.
+       * So have to apply `Required` to map to avoid that.*/
+      NormalizeEventFromEventsMap<Required<EventsMap>[Event]>
     : never
 >
 //#endregion
