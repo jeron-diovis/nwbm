@@ -2,7 +2,7 @@ import { EventEmitter } from 'node:events'
 
 import { useRef } from 'react'
 
-import { renderHook } from '@testing-library/react'
+import { fireEvent, renderHook } from '@testing-library/react'
 
 import { useEvent } from '../src'
 
@@ -18,13 +18,8 @@ describe('useEvent', () => {
 
     it('addEventListener / removeEventListener', () => {
       const cb = vi.fn()
-      const emitter = new EventEmitter()
-      const proxy = {
-        addEventListener: emitter.on.bind(emitter),
-        removeEventListener: emitter.off.bind(emitter),
-      }
-      renderHook(() => useEvent(proxy, 'click', cb))
-      emitter.emit('click')
+      renderHook(() => useEvent(window, 'click', cb))
+      fireEvent.click(window)
       expect(cb).toHaveBeenCalled()
     })
 
