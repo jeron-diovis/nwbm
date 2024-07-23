@@ -49,13 +49,17 @@ type GetEventTypeFromTarget<T extends EventTarget> = Parameters<
 >[0]
 type GetEventOptionsFromTarget<T extends EventTarget> = EmitterParams<T>[2]
 
-type GetEventNameConstraint<EventMap> = IfAny<EventMap, string, keyof EventMap>
+type GetEventNameConstraint<EventsMap> = IfAny<
+  EventsMap,
+  string,
+  keyof EventsMap
+>
 
-type GetEventType<EventMap, Event, Target extends EventTarget> = IfAny<
-  EventMap,
+type GetEventType<EventsMap, Event, Target extends EventTarget> = IfAny<
+  EventsMap,
   GetEventTypeFromTarget<Target>,
-  Event extends keyof EventMap
-    ? NormalizeEventFromEventMap<EventMap[Event]>
+  Event extends keyof EventsMap
+    ? NormalizeEventFromEventsMap<EventsMap[Event]>
     : never
 >
 //#endregion
@@ -83,36 +87,41 @@ type BuildOptions<CustomOptions, FilterArg> = UseEventOptions<FilterArg> &
   >
 //#endregion
 
-type SubscriptionArgs<EventMap, Event, Options, Target extends EventTarget> = [
-  event: MaybeArray<Event>,
-  callback: (e: GetEventType<EventMap, Event, Target>) => void,
+type SubscriptionArgs<
+  EventsMap,
+  EventName,
+  Options,
+  Target extends EventTarget,
+> = [
+  event: MaybeArray<EventName>,
+  callback: (e: GetEventType<EventsMap, EventName, Target>) => void,
   options?: BuildOptions<
     IfAny<Options, GetEventOptionsFromTarget<Target>>,
-    GetEventType<EventMap, Event, Target>
+    GetEventType<EventsMap, EventName, Target>
   >,
 ]
 
 export interface IUseEvent<
   /* Set defaults to `any`, so args from curried hook version
    * can always be passed to basic `useEvent` */
-  EventMap extends object = any,
+  EventsMap extends object = any,
   Options extends object = any,
 > {
   <
-    Event extends GetEventNameConstraint<EventMap>,
+    EventName extends GetEventNameConstraint<EventsMap>,
     Target extends EventTarget = EventTarget,
   >(
     target: Target | null,
-    ...args: SubscriptionArgs<EventMap, Event, Options, Target>
+    ...args: SubscriptionArgs<EventsMap, EventName, Options, Target>
   ): void
 }
 
 export interface IUseEventCurry<
-  EventMap extends object,
+  EventsMap extends object,
   Options extends object = never,
 > {
-  <Event extends keyof EventMap>(
-    ...args: SubscriptionArgs<EventMap, Event, Options, EventTarget>
+  <EventName extends keyof EventsMap>(
+    ...args: SubscriptionArgs<EventsMap, EventName, Options, EventTarget>
   ): void
 }
 
@@ -127,7 +136,7 @@ type IfAny<T, Y, N = T> = 0 extends 1 & T ? Y : N
  * As map values can be either a callback function,
  * or an array of callback args,
  * or just an event type. */
-type NormalizeEventFromEventMap<T> = T extends (e: infer U) => any
+type NormalizeEventFromEventsMap<T> = T extends (e: infer U) => any
   ? U
   : T extends [infer E, ...any[]]
     ? E
