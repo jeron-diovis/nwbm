@@ -9,7 +9,7 @@
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "scripts": {
-    "start": "vite",
+    "dev": "vite",
     "build": "vite build -c vite.config.lib.ts",
     "stat": "vite-bundle-visualizer -c vite.config.lib.ts -o stats/stats.html",
     "lint": "npm run lint:js && npm run lint:ts && npm run lint:css",
@@ -18,7 +18,8 @@
     "lint:ts": "tsc --noEmit",
     "lint:css": "stylelint \"{src,demo}/**/*.{s,}css\" --aei",
     "fix": "npm run lint:js --fix && npm run lint:css --fix",
-    "test": "vitest",
+    "test": "vitest run",
+    "test:w": "vitest watch",
     "prepare": "npx symlink-dir ../../.vite .vite-root",
     "prepublishOnly": "npm run test && npm run build"
   },
