@@ -2,7 +2,7 @@ import { EventEmitter } from 'node:events'
 
 import { createContext, useContext } from 'react'
 
-import { render, renderHook } from '@testing-library/react'
+import { fireEvent, render, renderHook } from '@testing-library/react'
 
 import { createUseEvent } from '../src'
 
@@ -76,5 +76,26 @@ describe('createUseEvent', () => {
 
     emitter.emit('custom', { foo: true })
     expect(cb).toHaveBeenCalled()
+  })
+
+  it('Example of "useWindowEvent"', () => {
+    const cb = vi.fn()
+
+    const useWindowEvent = createUseEvent<
+      WindowEventMap,
+      AddEventListenerOptions
+    >(() => window)
+
+    /* Note all the type inference on params and options here. */
+    renderHook(() =>
+      useWindowEvent('keypress', e => cb(e.shiftKey), {
+        once: true,
+        filter: e => e.key === 'a',
+      })
+    )
+
+    fireEvent.keyPress(window, { key: 'a' })
+    fireEvent.keyPress(window, { key: 'b' })
+    expect(cb).toHaveBeenCalledTimes(1)
   })
 })
