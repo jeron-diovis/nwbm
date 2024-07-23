@@ -4,7 +4,7 @@ import { useRef } from 'react'
 
 import { renderHook } from '@testing-library/react'
 
-import { IUseEvent, useEvent } from '../src'
+import { IUseEvent, IUseEventCurry, useEvent } from '../src'
 
 describe('useEvent', () => {
   describe('subscription interface', () => {
@@ -80,26 +80,45 @@ describe('useEvent', () => {
     expect(cb).toHaveBeenCalledTimes(1)
   })
 
-  /* TODO: how to actually _test_ that inference is working properly?
-   *  (aside of failing tscheck on precommit) */
-  it('should define a custom-typed useEvent hook', () => {
-    type MyEvent = {
-      foo: boolean
-    }
-    type EventsMap = {
-      custom: (e: MyEvent) => void
-    }
-    type MyListenerOptions = {
-      myOption?: number
-    }
+  describe('custom types', () => {
+    /* TODO: how to actually _test_ that inference is working properly?
+     *  (aside of failing tscheck on precommit) */
+    it('should define a custom-typed useEvent hook', () => {
+      type MyEvent = { foo: boolean }
+      type EventsMap = { custom: [MyEvent] }
+      type MyListenerOptions = { myOption?: number }
 
-    const useMyEvent: IUseEvent<EventsMap, MyListenerOptions> = useEvent
+      const useMyEvent: IUseEvent<EventsMap, MyListenerOptions> = useEvent
+
+      const cb = vi.fn()
+      const emitter = new EventEmitter<EventsMap>()
+      /* Note all the type inference on params and options here. */
+      renderHook(() =>
+        useMyEvent(emitter, 'custom', e => cb(e.foo), {
+          filter: e => e.foo,
+          myOption: 1,
+        })
+      )
+      emitter.emit('custom', { foo: true })
+      expect(cb).toHaveBeenCalled()
+    })
+  })
+
+  it('should define a curried typed useEvent hook', () => {
+    type MyEvent = { foo: boolean }
+    type EventsMap = { custom: [MyEvent] }
+    type MyListenerOptions = { myOption?: number }
 
     const cb = vi.fn()
-    const emitter = new EventEmitter()
+    const emitter = new EventEmitter<EventsMap>()
+
+    const useMyEmitterEvent: IUseEventCurry<EventsMap, MyListenerOptions> = (
+      ...args
+    ) => useEvent(emitter, ...args)
+
     /* Note all the type inference on params and options here. */
     renderHook(() =>
-      useMyEvent(emitter, 'custom', e => cb(e.foo), {
+      useMyEmitterEvent('custom', e => cb(e.foo), {
         filter: e => e.foo,
         myOption: 1,
       })
