@@ -68,32 +68,35 @@ export type UseEventOptions<FilterArg = unknown> = {
   filter?: (e: FilterArg) => boolean
 }
 
-type NormalizeOptions<CustomOptions, FilterArg> = UseEventOptions<FilterArg> &
-  /* Hook special options must never be overridden by listener options.
-   * (which is quite unlikely, but still should be considered) */
-  Omit<
-    /* Exclude any non-object option values –
-     * like the `capture: boolean` overload for AddEventListenerOptions */
-    Default<Extract<CustomOptions, object>, object>,
-    keyof UseEventOptions
-  >
+type NormalizeCustomOptions<T> = IfNever<
+  T,
+  object,
+  /* make sure custom opts won't intersect with reserved hook's options  */
+  Omit<T, keyof UseEventOptions>
+>
 
+type BuildOptions<CustomOptions, FilterArg> = UseEventOptions<FilterArg> &
+  NormalizeCustomOptions<
+    /* Filter out any non-object option values –
+     * like the `capture: boolean` overload for AddEventListenerOptions */
+    Extract<CustomOptions, object>
+  >
 //#endregion
 
 type SubscriptionArgs<EventMap, Event, Options, Target extends EventTarget> = [
   event: MaybeArray<Event>,
   callback: (e: GetEventType<EventMap, Event, Target>) => void,
-  options?: NormalizeOptions<
-    Default<Options, GetEventOptionsFromTarget<Target>>,
+  options?: BuildOptions<
+    IfAny<Options, GetEventOptionsFromTarget<Target>>,
     GetEventType<EventMap, Event, Target>
   >,
 ]
 
 export interface IUseEvent<
-  /* Set default to `any`, so args from curried hook version
+  /* Set defaults to `any`, so args from curried hook version
    * can always be passed to basic `useEvent` */
   EventMap extends object = any,
-  Options extends object = never,
+  Options extends object = any,
 > {
   <
     Event extends GetEventNameConstraint<EventMap>,
@@ -117,9 +120,8 @@ export interface IUseEventCurry<
 //#region utils
 type MaybeArray<T> = T | T[]
 
-type Default<T, D> = [T] extends [never] ? D : T
-
-type IfAny<T, Y, N> = 0 extends 1 & T ? Y : N
+type IfNever<T, Y, N = T> = [T] extends [never] ? Y : N
+type IfAny<T, Y, N = T> = 0 extends 1 & T ? Y : N
 
 /* Approach to "EventsMap" type varies from lib to lib.
  * As map values can be either a callback function,
