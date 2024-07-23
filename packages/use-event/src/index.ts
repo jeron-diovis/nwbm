@@ -1,7 +1,8 @@
 export * from './useEvent'
+export * from './createUseEvent'
 export type {
   IUseEvent,
-  IUseEventCurry,
+  IUseEventPartial,
   UseEventOptions,
 } from './useEvent.types'
 

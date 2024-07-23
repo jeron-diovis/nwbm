@@ -39,7 +39,7 @@ type NormalizeEmitter<T> = T extends Emitter1
       : never
 //#endregion
 
-type EventTarget = Emitter | RefObject<Emitter>
+export type EventTarget = Emitter | RefObject<Emitter>
 
 // ---
 //#region Infer Event params
@@ -116,13 +116,24 @@ export interface IUseEvent<
   ): void
 }
 
-export interface IUseEventCurry<
+export interface IUseEventPartial<
   EventsMap extends object,
   Options extends object = never,
 > {
   <EventName extends keyof EventsMap>(
     ...args: SubscriptionArgs<EventsMap, EventName, Options, EventTarget>
   ): void
+}
+
+export interface ICreateUseEvent {
+  <EventsMap extends object, Options extends object = never>(
+    useTarget: () => EventTarget | null
+  ): IUseEventPartial<EventsMap, Options>
+
+  <EventsMap extends object, Options extends object = never>(): IUseEvent<
+    EventsMap,
+    Options
+  >
 }
 
 // ---

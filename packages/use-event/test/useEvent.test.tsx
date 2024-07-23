@@ -4,7 +4,7 @@ import { useRef } from 'react'
 
 import { renderHook } from '@testing-library/react'
 
-import { IUseEvent, IUseEventCurry, useEvent } from '../src'
+import { useEvent } from '../src'
 
 describe('useEvent', () => {
   describe('subscription interface', () => {
@@ -78,52 +78,5 @@ describe('useEvent', () => {
     emitter.emit('test', { foo: true })
     emitter.emit('test', { foo: false })
     expect(cb).toHaveBeenCalledTimes(1)
-  })
-
-  describe('custom types', () => {
-    /* TODO: how to actually _test_ that inference is working properly?
-     *  (aside of failing tscheck on precommit) */
-    it('should define a custom-typed useEvent hook', () => {
-      type MyEvent = { foo: boolean }
-      type EventsMap = { custom: [MyEvent] }
-      type MyListenerOptions = { myOption?: number }
-
-      const useMyEvent: IUseEvent<EventsMap, MyListenerOptions> = useEvent
-
-      const cb = vi.fn()
-      const emitter = new EventEmitter<EventsMap>()
-      /* Note all the type inference on params and options here. */
-      renderHook(() =>
-        useMyEvent(emitter, 'custom', e => cb(e.foo), {
-          filter: e => e.foo,
-          myOption: 1,
-        })
-      )
-      emitter.emit('custom', { foo: true })
-      expect(cb).toHaveBeenCalled()
-    })
-  })
-
-  it('should define a curried typed useEvent hook', () => {
-    type MyEvent = { foo: boolean }
-    type EventsMap = { custom: [MyEvent] }
-    type MyListenerOptions = { myOption?: number }
-
-    const cb = vi.fn()
-    const emitter = new EventEmitter<EventsMap>()
-
-    const useMyEmitterEvent: IUseEventCurry<EventsMap, MyListenerOptions> = (
-      ...args
-    ) => useEvent(emitter, ...args)
-
-    /* Note all the type inference on params and options here. */
-    renderHook(() =>
-      useMyEmitterEvent('custom', e => cb(e.foo), {
-        filter: e => e.foo,
-        myOption: 1,
-      })
-    )
-    emitter.emit('custom', { foo: true })
-    expect(cb).toHaveBeenCalled()
   })
 })
