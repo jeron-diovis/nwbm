@@ -21,7 +21,7 @@ export const useEvent: IUseEvent = (target, event, listener, options) => {
       const el = 'current' in target ? target.current : (target as Emitter)
       if (!el) return undefined
 
-      const { enabled, ...listenerOptions } = refOptions.current ?? {}
+      const { enabled, filter, ...listenerOptions } = refOptions.current ?? {}
       if (enabled === false) return undefined
 
       refIsActive.current = true
