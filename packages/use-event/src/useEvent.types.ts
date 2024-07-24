@@ -104,6 +104,32 @@ type SubscriptionArgs<
   >,
 ]
 
+type XSubscriptionArgs<
+  Multi extends boolean,
+  EventsMap,
+  EventName,
+  Options,
+  Target extends EventTarget,
+> = Multi extends false
+  ? [
+      event: MaybeArray<EventName>,
+      callback: (e: GetEventType<EventsMap, EventName, Target>) => void,
+      options?: BuildOptions<
+        IfAny<Options, GetEventOptionsFromTarget<Target>>,
+        GetEventType<EventsMap, EventName, Target>
+      >,
+    ]
+  : [
+      events: Record<
+        EventName extends string ? EventName : string,
+        (e: GetEventType<EventsMap, EventName, Target>) => void
+      >,
+      options?: BuildOptions<
+        IfAny<Options, GetEventOptionsFromTarget<Target>>,
+        GetEventType<EventsMap, EventName, Target>
+      >,
+    ]
+
 export interface IUseEvent<
   /* Set defaults to `any`, so args from curried hook version
    * can always be passed to basic `useEvent` */
@@ -115,7 +141,22 @@ export interface IUseEvent<
     Target extends EventTarget = EventTarget,
   >(
     target: Target | null,
-    ...args: SubscriptionArgs<EventsMap, EventName, Options, Target>
+    ...args: XSubscriptionArgs<false, EventsMap, EventName, Options, Target>
+  ): void
+}
+
+export interface IUseEvent2<
+  /* Set defaults to `any`, so args from curried hook version
+   * can always be passed to basic `useEvent` */
+  EventsMap extends object = any,
+  Options extends object = any,
+> {
+  <
+    EventName extends GetEventNameConstraint<EventsMap>,
+    Target extends EventTarget = EventTarget,
+  >(
+    target: Target | null,
+    ...args: XSubscriptionArgs<true, EventsMap, EventName, Options, Target>
   ): void
 }
 
