@@ -76,4 +76,26 @@ describe('useDomEvent', () => {
 
     expect(cb).toHaveBeenCalledTimes(1)
   })
+
+  it('should support object notation', () => {
+    const cb = vi.fn()
+
+    renderHook(() =>
+      useDomEvent(
+        'document',
+        {
+          keypress: e => cb(e.key),
+          click: e => cb(e.button),
+        },
+        {
+          filter: e => !e.defaultPrevented,
+        }
+      )
+    )
+
+    fireEvent.keyPress(document)
+    fireEvent.click(document)
+
+    expect(cb).toHaveBeenCalledTimes(2)
+  })
 })

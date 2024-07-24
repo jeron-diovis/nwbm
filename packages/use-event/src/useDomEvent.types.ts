@@ -22,6 +22,14 @@ export interface IUseDomEvent {
     options?: UseDomEventOptions<HTMLElementEventMap[E]>
   ): void
 
+  <T extends HTMLElement, M extends keyof HTMLElementEventMap>(
+    el: RefOrVal<T> | null,
+    events: {
+      [E in M]?: ElementListener<E>
+    },
+    options?: UseDomEventOptions<HTMLElementEventMap[M]>
+  ): void
+
   <E extends keyof WindowEventMap>(
     el: 'window',
     event: E | E[],
@@ -29,10 +37,26 @@ export interface IUseDomEvent {
     options?: UseDomEventOptions<WindowEventMap[E]>
   ): void
 
+  <E extends keyof WindowEventMap>(
+    el: 'window',
+    events: {
+      [K in E]?: WindowListener<K>
+    },
+    options?: UseDomEventOptions<WindowEventMap[E]>
+  ): void
+
   <E extends keyof DocumentEventMap>(
     el: 'document',
     event: E | E[],
     callback: DocumentListener<E>,
+    options?: UseDomEventOptions<DocumentEventMap[E]>
+  ): void
+
+  <E extends keyof DocumentEventMap>(
+    el: 'document',
+    events: {
+      [K in E]?: DocumentListener<K>
+    },
     options?: UseDomEventOptions<DocumentEventMap[E]>
   ): void
 }
