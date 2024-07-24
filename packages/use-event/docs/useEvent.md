@@ -14,9 +14,9 @@ Supports targets providing any of following interfaces:
 npm install -S @yai/use-event
 ```  
 
-  ---
+---
 
-```ts  
+```ts
 import { useEvent } from '@yai/use-event'
 
 // With EventEmitter
@@ -35,6 +35,11 @@ const Component = () => {
 
 // Listen to multiple events at once  
 useEvent(emitter, ['foo', 'bar'], e => console.log(e))
+
+useEvent(emitter, {
+  foo: e => console.log(e),
+  bar: e => console.warn(e),
+})
 ```
 
 ## Typescript
@@ -80,7 +85,7 @@ If your emitter supports some special listener options, they also can be defined
 ```ts
 const useMyEvent = createUseEvent<MyEventsMap, { myOption?: string }>()
 ...
-useMyEvent(emitter, 'myEventName', cb, {myOption: 'some'})
+useMyEvent(emitter, 'myEventName', cb, { myOption: 'some' })
 // ^ will execute as `emitter.on('myEventName', cb, { myOption: 'some' })`
 ```
 
@@ -128,41 +133,17 @@ useWindowEvent('keypress', cb, {
 ## API
 
 ### `useEvent(emitter, type, listener, options?)`
+### `useEvent(emitter, listeners, options?)`
 
-```ts
-type SubUnsub = (
-  event: string,
-  callback: (e: unknown) => any,
-  options?: any
-) => any
-
-type Emitter =
-  | { on: SubUnsub, off: SubUnsub }
-  | { addEventListener: SubUnsub, removeEventListener: SubUnsub }
-  | { addListener: SubUnsub, removeListener: SubUnsub }
-
-const useEvent = <
-  E,
-  T extends Emitter
->(
-  target: React.RefObject<T> | T | null,
-  event: E | E[],
-  listener: (e: InferEventType<E, T>) => void,
-  options?: InferEventOptions<T> & {
-    enabled?: boolean;
-    filter?: (event: InferEventType<E, T>) => boolean
-  }
-): void
-```  
-
-| Argument | Type                                                                                         | Required | Description                                                                                                                                                                                       
-| -------- |----------------------------------------------------------------------------------------------| -------- | ------------- |  
-| target   | <code>React.RefObject&lt;T&gt; &#124; T &#124; null</code> | Yes       | Target to attach the event listener to. 
-| type     | <code>InferredEventType &#124; InferredEventType[]</code>                               | Yes       | The type of event to listen for.                                                                                                                                                    |  
-| listener | `(e: InferredEvent) => any`                                                       | Yes       | The callback invoked when the event type fires.      
-| options  | `InferredEventOptions`                                                                    | No        | Whatever listener options the particular event emitter provides |                                                                                                                                                   
-| options.enabled | `boolean                                                                                      `| No | Allows to cancel event subscription without unmounting component.
-| options.filter | `(event: InferredEvent) => boolean`                                                                        | No | Return `false` to prevent callback execution. Allows for a cleaner functional-style approach to conditional logic, with callback and predicate separated.
+| Argument | Type                                                                                            | Required | Description                                                                                                                                               
+| -------- |-------------------------------------------------------------------------------------------------| -------- |-----------------------------------------------------------------------------------------------------------------------------------------------------------|  
+| target   | <code>React.RefObject&lt;T&gt; &#124; T &#124; null</code>                                      | Yes       | Target to attach the event listener to.                                                                                                                   
+| type     | <code>string &#124; string[]</code>                                                             | Yes       | _(overload 1)_ The type of event to listen for.                                                                                                           |  
+| listener | `(e: InferredEvent) => any`                                                                     | Yes       | _(overload 1)_ The callback invoked when the event type fires.                                                                                            
+| listeners       | `Record<string, (event: E) => any>`                                                          | Yes      | _(overload 2)_ Replace `type` and `listener` with a set of listeners, allowing to assign multiple different handlers with one call.                       |      
+| options  | `InferredEventOptions`                                                                          | No        | Whatever listener options the particular event emitter provides.                                                                                          |                                                                                                                                                   
+| options.enabled | `boolean                                                                                      ` | No | Allows to cancel event subscription without unmounting component.                                                                                         
+| options.filter | `(event: InferredEvent) => boolean`                                                             | No | Return `false` to prevent callback execution. Allows for a cleaner functional-style approach to conditional logic, with callback and predicate separated. 
 
 ### `createUseEvent<EventsMap, ListenerOptions?>(useTarget?)`
 
