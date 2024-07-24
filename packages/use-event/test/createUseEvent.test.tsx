@@ -7,8 +7,9 @@ import { fireEvent, render, renderHook } from '@testing-library/react'
 import { createUseEvent } from '../src'
 
 describe('createUseEvent', () => {
-  type MyEvent = { foo: boolean }
-  type MyEventsMap = { custom: [MyEvent] }
+  type MyEvent1 = { arg_1: boolean; common?: boolean }
+  type MyEvent2 = { arg_2: boolean; common?: boolean }
+  type MyEventsMap = { e1: [MyEvent1]; e2: [MyEvent2] }
   type MyListenerOptions = { myOption?: number }
 
   /* TODO: how to actually _test_ that inference is working properly?
@@ -21,13 +22,13 @@ describe('createUseEvent', () => {
 
     /* Note all the type inference on params and options here. */
     renderHook(() =>
-      useMyEvent(emitter, 'custom', e => cb(e.foo), {
-        filter: e => e.foo,
+      useMyEvent(emitter, 'e1', e => cb(e.common), {
+        filter: e => e.common !== false,
         myOption: 1,
       })
     )
 
-    emitter.emit('custom', { foo: true })
+    emitter.emit('e1', { arg_1: true })
     expect(cb).toHaveBeenCalled()
   })
 
@@ -40,13 +41,13 @@ describe('createUseEvent', () => {
     )
 
     renderHook(() =>
-      useEmitterEvent('custom', e => cb(e.foo), {
-        filter: e => e.foo,
+      useEmitterEvent(['e1', 'e2'], e => cb(e.common), {
+        filter: e => e.common !== false,
         myOption: 1,
       })
     )
 
-    emitter.emit('custom', { foo: true })
+    emitter.emit('e1', { arg_1: true })
     expect(cb).toHaveBeenCalled()
   })
 
@@ -61,8 +62,8 @@ describe('createUseEvent', () => {
     )
 
     const Component = () => {
-      useEmitterEvent('custom', e => cb(e.foo), {
-        filter: e => e.foo,
+      useEmitterEvent('e1', e => cb(e.arg_1), {
+        filter: e => e.arg_1,
         myOption: 1,
       })
       return null
@@ -74,7 +75,7 @@ describe('createUseEvent', () => {
       </Context.Provider>
     )
 
-    emitter.emit('custom', { foo: true })
+    emitter.emit('e1', { arg_1: true })
     expect(cb).toHaveBeenCalled()
   })
 

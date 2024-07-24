@@ -82,7 +82,7 @@ type NormalizeCustomOptions<T> = IfNever<
   Omit<T, keyof UseEventOptions>
 >
 
-type BuildOptions<CustomOptions, FilterArg> = UseEventOptions<FilterArg> &
+type HookOptions<CustomOptions, FilterArg> = UseEventOptions<FilterArg> &
   NormalizeCustomOptions<
     /* Filter out any non-object option values –
      * like the `capture: boolean` overload for AddEventListenerOptions */
@@ -90,55 +90,49 @@ type BuildOptions<CustomOptions, FilterArg> = UseEventOptions<FilterArg> &
   >
 //#endregion
 
-type HookOptions<
-  EventsMap,
-  EventName,
-  Options,
-  Target extends EventTarget,
-> = BuildOptions<
-  IfAny<Options, GetEventOptionsFromTarget<Target>>,
-  GetEventType<EventsMap, EventName, Target>
->
-
 type ListenersArgs<
   AsObj extends boolean,
   EventsMap,
-  EventName,
+  EventNames extends keyof EventsMap,
   Target extends EventTarget = EventTarget,
 > = AsObj extends false
   ? [
-      event: MaybeArray<EventName>,
-      callback: (e: GetEventType<EventsMap, EventName, Target>) => void,
+      event: EventNames | EventNames[],
+      callback: (e: GetEventType<EventsMap, EventNames, Target>) => void,
     ]
   : [
       events: {
-        [K in keyof EventsMap]?: (e: GetEventType<EventsMap, K, Target>) => void
+        [E in EventNames]?: (e: GetEventType<EventsMap, E, Target>) => void
       },
     ]
 
 type SubscriptionArgs<
   AsObj extends boolean,
   EventsMap,
-  EventName,
+  EventNames extends keyof EventsMap,
   Options,
   Target extends EventTarget = EventTarget,
 > = [
-  ...ListenersArgs<AsObj, EventsMap, EventName, Target>,
-  options?: HookOptions<EventsMap, EventName, Options, Target>,
+  ...ListenersArgs<AsObj, EventsMap, EventNames, Target>,
+
+  options?: HookOptions<
+    IfAny<Options, GetEventOptionsFromTarget<Target>>,
+    GetEventType<EventsMap, EventNames, Target>
+  >,
 ]
 
 type UseEventArgs<
   Partial extends boolean,
   AsObj extends boolean,
   EventsMap,
-  EventName,
+  EventNames extends keyof EventsMap,
   Options,
   Target extends EventTarget = EventTarget,
 > = Partial extends true
-  ? SubscriptionArgs<AsObj, EventsMap, EventName, Options, Target>
+  ? SubscriptionArgs<AsObj, EventsMap, EventNames, Options, Target>
   : [
       target: Target | null,
-      ...args: SubscriptionArgs<AsObj, EventsMap, EventName, Options, Target>,
+      ...args: SubscriptionArgs<AsObj, EventsMap, EventNames, Options, Target>,
     ]
 
 export interface IUseEvent<
@@ -188,8 +182,6 @@ export interface ICreateUseEvent {
 
 // ---
 //#region utils
-type MaybeArray<T> = T | T[]
-
 type IfNever<T, Y, N = T> = [T] extends [never] ? Y : N
 type IfAny<T, Y, N = T> = 0 extends 1 & T ? Y : N
 
