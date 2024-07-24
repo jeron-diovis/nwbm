@@ -47,16 +47,29 @@ describe('useEvent', () => {
     })
   })
 
-  it('should subscribe to multiple events', () => {
-    const cb = vi.fn()
-    const emitter = new EventEmitter()
-    renderHook(() => useEvent(emitter, ['first', 'second'], cb))
-    emitter.emit('first')
-    emitter.emit('second')
-    expect(cb).toHaveBeenCalledTimes(2)
+  describe('subscribe to multiple events', () => {
+    it('array notation', () => {
+      const cb = vi.fn()
+      const emitter = new EventEmitter()
+      renderHook(() => useEvent(emitter, ['first', 'second'], cb))
+      emitter.emit('first')
+      emitter.emit('second')
+      expect(cb).toHaveBeenCalledTimes(2)
+    })
+
+    it('object notation', () => {
+      const cb1 = vi.fn()
+      const cb2 = vi.fn()
+      const emitter = new EventEmitter()
+      renderHook(() => useEvent(emitter, { first: cb1, second: cb2 }))
+      emitter.emit('first')
+      emitter.emit('second')
+      expect(cb1).toHaveBeenCalledTimes(1)
+      expect(cb2).toHaveBeenCalledTimes(1)
+    })
   })
 
-  it('should not call event handler when "enabled" option is false', () => {
+  it('should not call event handler when options.enabled=false', () => {
     const cb = vi.fn()
     const emitter = new EventEmitter()
     renderHook(() => useEvent(emitter, 'click', cb, { enabled: false }))
@@ -73,5 +86,38 @@ describe('useEvent', () => {
     emitter.emit('test', { foo: true })
     emitter.emit('test', { foo: false })
     expect(cb).toHaveBeenCalledTimes(1)
+  })
+
+  describe('object notation', () => {
+    it('options.enabled=false should disable all listeners at once', () => {
+      const cb1 = vi.fn()
+      const cb2 = vi.fn()
+      const emitter = new EventEmitter()
+      renderHook(() =>
+        useEvent(emitter, { first: cb1, second: cb2 }, { enabled: false })
+      )
+      emitter.emit('first')
+      emitter.emit('second')
+      expect(cb1).not.toHaveBeenCalled()
+      expect(cb2).not.toHaveBeenCalled()
+    })
+
+    it('should pass listener options to all listeners at once', () => {
+      const cb1 = vi.fn()
+      const cb2 = vi.fn()
+
+      renderHook(() =>
+        useEvent(window, { click: cb1, focus: cb2 }, { once: true })
+      )
+
+      fireEvent.click(window)
+      fireEvent.focus(window)
+
+      fireEvent.click(window)
+      fireEvent.focus(window)
+
+      expect(cb1).toHaveBeenCalledTimes(1)
+      expect(cb2).toHaveBeenCalledTimes(1)
+    })
   })
 })

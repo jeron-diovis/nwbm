@@ -90,23 +90,7 @@ type BuildOptions<CustomOptions, FilterArg> = UseEventOptions<FilterArg> &
   >
 //#endregion
 
-/*
 type SubscriptionArgs<
-  EventsMap,
-  EventName,
-  Options,
-  Target extends EventTarget,
-> = [
-  event: MaybeArray<EventName>,
-  callback: (e: GetEventType<EventsMap, EventName, Target>) => void,
-  options?: BuildOptions<
-    IfAny<Options, GetEventOptionsFromTarget<Target>>,
-    GetEventType<EventsMap, EventName, Target>
-  >,
-]
-*/
-
-type XSubscriptionArgs<
   Multi extends boolean,
   EventsMap,
   EventName,
@@ -122,13 +106,7 @@ type XSubscriptionArgs<
       >,
     ]
   : [
-      events: /*Partial<
-        Record<
-          // EventName extends string ? EventName : string,
-          Exclude<keyof EventsMap, number | symbol>,
-          (e: GetEventType<EventsMap, EventName, Target>) => void
-        >
-      >*/ {
+      events: {
         [K in keyof EventsMap]?: (e: GetEventType<EventsMap, K, Target>) => void
       },
       options?: BuildOptions<
@@ -148,22 +126,7 @@ export interface IUseEvent<
     Target extends EventTarget = EventTarget,
   >(
     target: Target | null,
-    ...args: XSubscriptionArgs<false, EventsMap, EventName, Options, Target>
-  ): void
-}
-
-export interface IUseEvent2<
-  /* Set defaults to `any`, so args from curried hook version
-   * can always be passed to basic `useEvent` */
-  EventsMap extends object = any,
-  Options extends object = any,
-> {
-  <
-    EventName extends GetEventNameConstraint<EventsMap>,
-    Target extends EventTarget = EventTarget,
-  >(
-    target: Target | null,
-    ...args: XSubscriptionArgs<false, EventsMap, EventName, Options, Target>
+    ...args: SubscriptionArgs<false, EventsMap, EventName, Options, Target>
   ): void
 
   <
@@ -171,7 +134,7 @@ export interface IUseEvent2<
     Target extends EventTarget = EventTarget,
   >(
     target: Target | null,
-    ...args: XSubscriptionArgs<true, EventsMap, EventName, Options, Target>
+    ...args: SubscriptionArgs<true, EventsMap, EventName, Options, Target>
   ): void
 }
 
@@ -180,17 +143,11 @@ export interface IUseEventPartial<
   Options extends object = never,
 > {
   <EventName extends keyof EventsMap>(
-    ...args: XSubscriptionArgs<true, EventsMap, EventName, Options, EventTarget>
+    ...args: SubscriptionArgs<true, EventsMap, EventName, Options, EventTarget>
   ): void
 
   <EventName extends keyof EventsMap>(
-    ...args: XSubscriptionArgs<
-      false,
-      EventsMap,
-      EventName,
-      Options,
-      EventTarget
-    >
+    ...args: SubscriptionArgs<false, EventsMap, EventName, Options, EventTarget>
   ): void
 }
 
@@ -199,7 +156,7 @@ export interface ICreateUseEvent {
     useTarget: () => EventTarget | null
   ): IUseEventPartial<EventsMap, Options>
 
-  <EventsMap extends object, Options extends object = never>(): IUseEvent2<
+  <EventsMap extends object, Options extends object = never>(): IUseEvent<
     EventsMap,
     Options
   >
@@ -221,4 +178,6 @@ type NormalizeEventFromEventsMap<T> = T extends (e: infer U) => any
   : T extends [infer E, ...any[]]
     ? E
     : T
+
+export type Fn = (...args: any[]) => any
 //#endregion
