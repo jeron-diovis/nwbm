@@ -2,12 +2,10 @@ import { RefObject, useEffect, useRef } from 'react'
 
 import { Emitter, Fn, IUseEvent, UseEventOptions } from './useEvent.types'
 
-type Dict<T = unknown> = Record<string, T>
-
 export const useEvent: IUseEvent = (target, eventOrListeners, ...rest) => {
   // ---
   // parse overloaded args
-  let listeners: Fn | Dict<Fn>
+  let listeners: Fn | Listeners
   let events: string | string[]
   let options: UseEventOptions | undefined
 
@@ -21,7 +19,7 @@ export const useEvent: IUseEvent = (target, eventOrListeners, ...rest) => {
   // useEvent(target, { event: callback }, options?)
   else {
     events = Object.keys(eventOrListeners)
-    listeners = eventOrListeners as Dict<Fn>
+    listeners = eventOrListeners as Listeners
     options = rest[0] as UseEventOptions
   }
 
@@ -34,7 +32,7 @@ export const useEvent: IUseEvent = (target, eventOrListeners, ...rest) => {
     refOptions.current = options
   })
 
-  const refIsActive = useRef(true)
+  const refActive = useRef(true)
 
   // ---
 
@@ -42,7 +40,6 @@ export const useEvent: IUseEvent = (target, eventOrListeners, ...rest) => {
     () => {
       // ---
       // short circuit exit
-
       if (!target) return undefined
 
       const el = 'current' in target ? target.current : (target as Emitter)
@@ -53,29 +50,30 @@ export const useEvent: IUseEvent = (target, eventOrListeners, ...rest) => {
 
       // ---
 
-      refIsActive.current = true
+      refActive.current = true
 
       // ---
       // resolve event listeners map
       const listeners = Object.entries(
-        resolveListenersMap(refListeners.current, events)
-      ).map(
-        ([key, fn]) =>
-          [key, createManagedListener(fn, refIsActive, refOptions)] as const
+        resolveListeners(refListeners.current, events)
       )
+        .map(([key, fn]) =>
+          !fn ? null : ([key, toManagedCb(fn, refActive, refOptions)] as const)
+        )
+        .filter(x => x !== null)
 
       // ---
       // sub / unsub
       const toggleListeners = (enabled: boolean) => {
         const method = enabled ? sub : unsub
-        listeners.forEach(([event, listener]) => {
-          method(el, event, listener, listenerOptions)
+        listeners.forEach(([event, cb]) => {
+          method(el, event, cb, listenerOptions)
         })
       }
 
       toggleListeners(true)
       return () => {
-        refIsActive.current = false
+        refActive.current = false
         toggleListeners(false)
       }
     },
@@ -95,30 +93,47 @@ export const useEvent: IUseEvent = (target, eventOrListeners, ...rest) => {
 
 // ---
 
-function resolveListenersMap(
-  fns: Fn | Dict<Fn>,
+/* Listeners map is defined as { key?: Fn }.
+ * Technically this is equivalent to "{ key?: Fn | undefined }" (for some weird TS reason).
+ * Which means, user can pass in a listeners map full of undefined –
+ * and we should handle those gracefully. */
+type Listeners = Record<string, Fn | undefined>
+
+function resolveListeners(
+  fns: Fn | Listeners,
   events: string | string[]
-): Dict<Fn> {
+): Listeners {
+  // useEvent(target, { event: callback })
   if (typeof fns !== 'function') {
     return fns
   }
 
+  // useEvent(target, ['e1', 'e2'], callback)
   if (Array.isArray(events)) {
     return events.reduce((m, k) => ({ ...m, [k]: fns }), {})
   }
 
+  // useEvent(target, 'event', callback)
   return { [events]: fns }
 }
 
-function createManagedListener(
-  fn: Fn,
+function toManagedCb(
+  fn: Fn | undefined,
   refActive: RefObject<boolean>,
   refOptions: RefObject<UseEventOptions | undefined>
 ): Fn {
-  console.log('?', fn)
+  /* Although we can silently wrap undefined listeners,
+   * there would be no point in attaching them then. So forbid it. */
+  if (!fn) throw new Error('listener is undefined')
+
   return (...args: any[]) => {
+    /* Skip listener invocation if hook is already not active at that moment.
+     * I.e., prevent cases of "can't update state on unmounted component" with bubbling events. */
     if (!refActive.current) return
+
+    /* User's own logic of skipping listener invocation. */
     if (refOptions.current?.filter?.(args[0]) === false) return
+
     return fn(...args)
   }
 }

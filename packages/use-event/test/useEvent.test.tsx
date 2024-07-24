@@ -119,5 +119,14 @@ describe('useEvent', () => {
       expect(cb1).toHaveBeenCalledTimes(1)
       expect(cb2).toHaveBeenCalledTimes(1)
     })
+
+    it('should handle explicitly undefined listeners', () => {
+      const emitter = new EventEmitter()
+
+      const scenario = () =>
+        renderHook(() => useEvent(emitter, { test: undefined }))
+
+      expect(scenario).not.toThrow()
+    })
   })
 })
