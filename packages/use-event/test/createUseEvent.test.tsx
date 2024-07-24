@@ -88,10 +88,18 @@ describe('createUseEvent', () => {
 
     /* Note all the type inference on params and options here. */
     renderHook(() =>
-      useWindowEvent('keypress', e => cb(e.shiftKey), {
+      /*useWindowEvent('keypress', e => cb(e.shiftKey), {
         once: true,
         filter: e => e.key === 'a',
-      })
+      })*/
+
+      useWindowEvent(
+        { keypress: e => cb(e.shiftKey) },
+        {
+          once: true,
+          filter: e => !e.defaultPrevented,
+        }
+      )
     )
 
     fireEvent.keyPress(window, { key: 'a' })

@@ -4,7 +4,7 @@ import { useRef } from 'react'
 
 import { fireEvent, renderHook } from '@testing-library/react'
 
-import { useEvent2 as useEvent } from '../src/useEvent2'
+import { useEvent } from '../src/useEvent2'
 
 describe('useEvent', () => {
   describe('subscription interface', () => {

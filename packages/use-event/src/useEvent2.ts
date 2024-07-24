@@ -1,9 +1,9 @@
-import { useCallback, useEffect, useMemo, useRef } from 'react'
+import { useEffect, useRef } from 'react'
 
-import { Emitter, IUseEvent2 } from './useEvent.types'
+import { Emitter, IUseEvent2, UseEventOptions } from './useEvent.types'
 
 type Fn = (...args: any[]) => any
-type Dict<T = unknown> = Record<string, T>
+type Dict<T = unknown> = Partial<Record<string, T>>
 
 /*export function useLatestCallback<T extends Fn>(fn: T): T {
   const refFn = useRef(fn)
@@ -29,7 +29,28 @@ export function useLatestCallbacks<T extends Dict<Fn>>(fns: T): T {
   }, [Object.keys(fns).join(' ')])
 }*/
 
-export const useEvent2: IUseEvent2 = (target, listeners, options) => {
+function getListenerDependency(x: string | string[] | Dict) {
+  if (typeof x === 'string') return x
+  if (Array.isArray(x)) return x.join(' ')
+  return Object.keys(x).join(' ')
+}
+
+// export const useEvent2: IUseEvent2 = (target, listeners, options) => {
+export const useEvent: IUseEvent2 = (target, eventOrListeners, ...rest) => {
+  let listeners: Fn | Dict<Fn>
+  let event: string | string[] = []
+  let options: UseEventOptions | undefined
+
+  if (typeof eventOrListeners === 'string' || Array.isArray(eventOrListeners)) {
+    event = eventOrListeners
+    listeners = rest[0] as Fn
+    options = rest[1]
+  } else {
+    event = Object.keys(eventOrListeners)
+    listeners = eventOrListeners
+    options = rest[0] as UseEventOptions
+  }
+
   // const sListeners = useLatestCallbacks(listeners)
   const refListeners = useRef(listeners)
   const refOptions = useRef(options)
@@ -52,7 +73,14 @@ export const useEvent2: IUseEvent2 = (target, listeners, options) => {
 
       refIsActive.current = true
 
-      const listeners = Object.entries(refListeners.current).map(
+      const fns = refListeners.current
+      const listeners = Object.entries(
+        typeof fns !== 'function'
+          ? fns
+          : Array.isArray(event)
+            ? event.reduce((m, k) => ({ ...m, [k]: fns }), {})
+            : { [event]: fns }
+      ).map(
         ([key, fn]) =>
           [
             key,
@@ -79,7 +107,9 @@ export const useEvent2: IUseEvent2 = (target, listeners, options) => {
     /* eslint-disable react-hooks/exhaustive-deps */
     [
       target,
-      Object.keys(listeners).join(' '),
+      // Object.keys(listeners).join(' '),
+      // getListenerDependency(listeners),
+      getListenerDependency(event),
       // sListeners,
       /* Depend only on this option, as it's specially meant to change behavior of effect */
       refOptions.current?.enabled,
