@@ -2,9 +2,11 @@ import { RefObject, useEffect, useRef } from 'react'
 
 import { Emitter, Fn, IUseEvent, UseEventOptions } from './useEvent.types'
 
-export const useEvent: IUseEvent = (target, eventOrListeners, ...rest) => {
+export const useEvent: IUseEvent = (...args: any[]) => {
   // ---
   // parse overloaded args
+  const [target, eventOrListeners, ...rest] = args
+
   let listeners: Fn | Listeners
   let events: string | string[]
   let options: UseEventOptions | undefined

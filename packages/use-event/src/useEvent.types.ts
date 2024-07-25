@@ -49,12 +49,6 @@ type GetEventTypeFromTarget<T extends EventTarget> = Parameters<
 >[0]
 type GetEventOptionsFromTarget<T extends EventTarget> = EmitterParams<T>[2]
 
-type GetEventNameConstraint<EventsMap> = IfAny<
-  EventsMap,
-  string,
-  Exclude<keyof EventsMap, number | symbol>
->
-
 type GetEventType<
   EventsMap,
   Event,
@@ -86,58 +80,23 @@ type NormalizeCustomOptions<T> = IfNever<
   Omit<T, keyof UseEventOptions>
 >
 
-type HookOptions<CustomOptions, FilterArg> = UseEventOptions<FilterArg> &
+type BuildOptions<CustomOptions, FilterArg> = UseEventOptions<FilterArg> &
   NormalizeCustomOptions<
     /* Filter out any non-object option values –
      * like the `capture: boolean` overload for AddEventListenerOptions */
     Extract<CustomOptions, object>
   >
+
+type HookOptions<
+  EventsMap,
+  EventNames extends keyof EventsMap,
+  Options,
+  Target extends EventTarget = EventTarget,
+> = BuildOptions<
+  IfAny<Options, GetEventOptionsFromTarget<Target>>,
+  GetEventType<EventsMap, EventNames, Target>
+>
 //#endregion
-
-type ListenersArgs<
-  AsObj extends boolean,
-  EventsMap,
-  EventNames extends keyof EventsMap,
-  Target extends EventTarget = EventTarget,
-> = AsObj extends false
-  ? [
-      event: EventNames | EventNames[],
-      callback: (e: GetEventType<EventsMap, EventNames, Target>) => void,
-    ]
-  : [
-      events: {
-        [E in EventNames]?: (e: GetEventType<EventsMap, E, Target>) => void
-      },
-    ]
-
-type SubscriptionArgs<
-  AsObj extends boolean,
-  EventsMap,
-  EventNames extends keyof EventsMap,
-  Options,
-  Target extends EventTarget = EventTarget,
-> = [
-  ...ListenersArgs<AsObj, EventsMap, EventNames, Target>,
-
-  options?: HookOptions<
-    IfAny<Options, GetEventOptionsFromTarget<Target>>,
-    GetEventType<EventsMap, EventNames, Target>
-  >,
-]
-
-type UseEventArgs<
-  Partial extends boolean,
-  AsObj extends boolean,
-  EventsMap,
-  EventNames extends keyof EventsMap,
-  Options,
-  Target extends EventTarget = EventTarget,
-> = Partial extends true
-  ? SubscriptionArgs<AsObj, EventsMap, EventNames, Options, Target>
-  : [
-      target: Target | null,
-      ...args: SubscriptionArgs<AsObj, EventsMap, EventNames, Options, Target>,
-    ]
 
 export interface IUseEvent<
   /* Set defaults to `any`, so args from curried hook version
@@ -146,43 +105,48 @@ export interface IUseEvent<
   Options extends object = any,
 > {
   <
-    EventName extends GetEventNameConstraint<EventsMap>,
+    SubMap extends NormalizeEventsMap<EventsMap>,
     Target extends EventTarget = EventTarget,
   >(
-    ...args: UseEventArgs<false, true, EventsMap, EventName, Options, Target>
+    target: Target | null,
+    events: SubMap,
+    options?: HookOptions<SubMap, keyof SubMap, Options, Target>
   ): void
 
-  <
-    EventName extends GetEventNameConstraint<EventsMap>,
-    Target extends EventTarget = EventTarget,
-  >(
-    ...args: UseEventArgs<false, false, EventsMap, EventName, Options, Target>
+  <EventName extends keyof EventsMap, Target extends EventTarget = EventTarget>(
+    target: Target | null,
+    event: EventName | EventName[],
+    callback: (e: GetEventType<EventsMap, EventName, Target>) => void,
+    options?: HookOptions<EventsMap, EventName, Options, Target>
   ): void
-}
-
-type NormalizeEventsMap<M> = {
-  [E in keyof M]?: (e: NormalizeEventFromEventsMap<M[E]>) => void
 }
 
 export interface IUseEventPartial<
   EventsMap extends object,
   Options extends object = never,
 > {
-  <
-    SubMap extends NormalizeEventsMap<EventsMap>,
-    EventNames extends keyof SubMap,
-  >(
-    // ...args: UseEventArgs<true, true, SubMap, EventNames, Options>
-    events: SubMap,
+  // <SubMap extends EventsMap>(
+  //   events: NormalizeEventsMap<SubMap>,
+  //   // events: SubMap,
+  //   options?: HookOptions<SubMap, keyof SubMap, Options>
+  // ): void
 
-    options?: HookOptions<
-      IfNever<Options, GetEventOptionsFromTarget<EventTarget>>,
-      GetEventType<SubMap, EventNames>
-    >
+  <E extends keyof EventsMap>(
+    events: Pick<NormalizeEventsMap<EventsMap>, E>,
+    // options?: HookOptions<Pick<EventsMap, E>, E, Options>
+
+    // events: X<NormalizeEventsMap<EventsMap>, E>,
+    options?: HookOptions<EventsMap, E, Options>
   ): void
+  // <E extends keyof EventsMap, M extends NormalizeEventsMap<Pick<EventsMap, E>>>(
+  //   events: M,
+  // options?: HookOptions<M, E, Options>
+  // ): void
 
   <EventName extends keyof EventsMap>(
-    ...args: UseEventArgs<true, false, EventsMap, EventName, Options>
+    event: EventName | EventName[],
+    callback: (e: GetEventType<EventsMap, EventName>) => void,
+    options?: HookOptions<EventsMap, EventName, Options>
   ): void
 }
 
@@ -211,6 +175,13 @@ type NormalizeEventFromEventsMap<T> = T extends (e: infer U) => any
   : T extends [infer E, ...any[]]
     ? E
     : T
+
+type NormalizeEventsMap<M> = {
+  // [E in NormKey<keyof M>]?: (
+  [E in keyof M]?: (e: NormalizeEventFromEventsMap<Required<M>[E]>) => void
+}
+
+// type NormKey<T> = Exclude<T, number | symbol>
 
 export type Fn = (...args: any[]) => any
 //#endregion

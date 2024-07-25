@@ -3,5 +3,5 @@ import { Fn, ICreateUseEvent } from './useEvent.types'
 
 export const createUseEvent = (useTarget =>
   useTarget
-    ? (...args) => (useEvent as Fn)(useTarget(), ...args)
+    ? (...args: any[]) => (useEvent as Fn)(useTarget(), ...args)
     : useEvent) as ICreateUseEvent

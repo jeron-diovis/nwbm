@@ -98,6 +98,8 @@ describe('createUseEvent', () => {
         {
           keypress: e => cb(e.shiftKey),
           click: e => cb(e.button),
+          // foo: e => cb(e.foo),
+          // bar: 42,
         },
         {
           once: true,
