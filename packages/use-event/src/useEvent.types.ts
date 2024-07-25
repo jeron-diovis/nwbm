@@ -55,7 +55,11 @@ type GetEventNameConstraint<EventsMap> = IfAny<
   Exclude<keyof EventsMap, number | symbol>
 >
 
-type GetEventType<EventsMap, Event, Target extends EventTarget> = IfAny<
+type GetEventType<
+  EventsMap,
+  Event,
+  Target extends EventTarget = EventTarget,
+> = IfAny<
   EventsMap,
   GetEventTypeFromTarget<Target>,
   Event extends keyof EventsMap
@@ -156,16 +160,29 @@ export interface IUseEvent<
   ): void
 }
 
+type NormalizeEventsMap<M> = {
+  [E in keyof M]?: (e: NormalizeEventFromEventsMap<M[E]>) => void
+}
+
 export interface IUseEventPartial<
   EventsMap extends object,
   Options extends object = never,
 > {
-  <EventName extends keyof EventsMap>(
-    ...args: UseEventArgs<true, false, EventsMap, EventName, Options>
+  <
+    SubMap extends NormalizeEventsMap<EventsMap>,
+    EventNames extends keyof SubMap,
+  >(
+    // ...args: UseEventArgs<true, true, SubMap, EventNames, Options>
+    events: SubMap,
+
+    options?: HookOptions<
+      IfNever<Options, GetEventOptionsFromTarget<EventTarget>>,
+      GetEventType<SubMap, EventNames>
+    >
   ): void
 
   <EventName extends keyof EventsMap>(
-    ...args: UseEventArgs<true, true, EventsMap, EventName, Options>
+    ...args: UseEventArgs<true, false, EventsMap, EventName, Options>
   ): void
 }
 

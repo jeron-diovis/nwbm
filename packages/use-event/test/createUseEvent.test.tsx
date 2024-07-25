@@ -62,10 +62,15 @@ describe('createUseEvent', () => {
     )
 
     const Component = () => {
-      useEmitterEvent('e1', e => cb(e.arg_1), {
-        filter: e => e.arg_1,
-        myOption: 1,
-      })
+      useEmitterEvent(
+        {
+          e1: e => cb(e.arg_1),
+        },
+        {
+          filter: e => e.arg_1,
+          myOption: 1,
+        }
+      )
       return null
     }
 
