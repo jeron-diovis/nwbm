@@ -6,15 +6,18 @@ import { useEvent } from './useEvent'
 type Target = RefOrVal<HTMLElement> | 'window' | 'document'
 
 export const useDomEvent: IUseDomEvent = (target: Target, ...args: any[]) => {
-  const refBrowserGlobal = useRef(resolveBrowserGlobal(target))
+  const refGlobalTarget = useRef<GlobalTarget>()
+  refGlobalTarget.current = resolveGlobalTarget(target)
+
   const el =
-    target === 'window' || target === 'document' ? refBrowserGlobal : target
+    target === 'window' || target === 'document' ? refGlobalTarget : target
 
   return useEvent(...([el, ...args] as Parameters<typeof useEvent>))
 }
 
-function resolveBrowserGlobal(target: Target) {
-  /* eslint-disable no-nested-ternary */
+type GlobalTarget = Window | Document | null
+
+function resolveGlobalTarget(target: Target): GlobalTarget {
   return target === 'window'
     ? typeof window === 'undefined'
       ? null
@@ -24,5 +27,4 @@ function resolveBrowserGlobal(target: Target) {
         ? null
         : document
       : null
-  /* eslint-enable no-nested-ternary */
 }
