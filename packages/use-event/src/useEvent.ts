@@ -87,7 +87,7 @@ export const useEvent: IUseEvent = (...args: any[]) => {
        * Other ones are _supposed_ to NOT change upon hook lifetime.
        * Because what's the usecase for that?
        * Like, change listener phase from capture to bubble back and forth – what's the point? */
-      refOptions.current?.enabled,
+      options?.enabled,
     ]
     /* eslint-enable */
   )
