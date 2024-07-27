@@ -4,7 +4,7 @@ React hooks for subscribing to event emitters.
 
 ---
 
-## [useDomEvent](/docs/use-dom-event.md)
+## [useDomEvent](/packages/use-event/docs/useDomEvent.md)
 
 Subscribe to events on DOM elements.
 
@@ -24,10 +24,10 @@ useEvent(ref, 'scroll', e => console.log(e), { passive: true })
 useEvent(ref, ['click', 'keypress'], e => console.log(e))
 ```
 
-More details in [dedicated page](/docs/use-dom-event.md).
+More details in [dedicated page](/packages/use-event/docs/useDomEvent.md).
 
 ---
-## [useEvent](/docs/use-event.md)
+## [useEvent](/packages/use-event/docs/useEvent.md)
 
 Low-level hook for subscribing to arbitrary event emitters.
 
@@ -47,4 +47,4 @@ useEvent(emitter, 'my-event', e => console.log(e))
 emitter.emit('my-event')
 ```
 
-See detailed usage examples in [dedicated page](/docs/use-event.md).
+See detailed usage examples in [dedicated page](/packages/use-event/docs/useEvent.md).

@@ -19,7 +19,7 @@ const Component = () => {
 
 // Listen to multiple events at once
 useEvent(ref, ['click', 'keypress'], e => console.log(e))
-// Or with differenr listener for each event
+// Or with different listener for each event
 useEvent(ref, {
   'click': e => console.log(e),
   'keypress': e => console.log(e),
