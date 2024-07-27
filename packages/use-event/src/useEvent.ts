@@ -94,7 +94,7 @@ export const useEvent: IUseEvent = (...args: any[]) => {
 }
 
 // ---
-
+//#region resolve listeners
 /* Listeners map is defined as { key?: Fn }.
  * Technically this is equivalent to "{ key?: Fn | undefined }" (for some weird TS reason).
  * Which means, user can pass in a listeners map full of undefined –
@@ -139,6 +139,7 @@ function toManagedCb(
     return fn(...args)
   }
 }
+//#endregion
 
 // ---
 //#region generic sub/unsub

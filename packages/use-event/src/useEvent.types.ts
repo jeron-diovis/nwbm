@@ -105,7 +105,7 @@ export interface IUseEvent<
   Options extends object = any,
 > {
   <
-    SubMap extends NormalizeEventsMap<EventsMap>,
+    SubMap extends EventsMapConstraint<EventsMap, SubMap>,
     Target extends EventTarget = EventTarget,
   >(
     target: Target | null,
@@ -115,7 +115,7 @@ export interface IUseEvent<
 
   <EventName extends keyof EventsMap, Target extends EventTarget = EventTarget>(
     target: Target | null,
-    event: EventName | EventName[],
+    event: EventNameConstraint<EventName>,
     callback: (e: GetEventType<EventsMap, EventName, Target>) => void,
     options?: HookOptions<EventsMap, EventName, Options, Target>
   ): void
@@ -125,26 +125,13 @@ export interface IUseEventPartial<
   EventsMap extends object,
   Options extends object = never,
 > {
-  // <SubMap extends EventsMap>(
-  //   events: NormalizeEventsMap<SubMap>,
-  //   // events: SubMap,
-  //   options?: HookOptions<SubMap, keyof SubMap, Options>
-  // ): void
-
-  <E extends keyof EventsMap>(
-    events: Pick<NormalizeEventsMap<EventsMap>, E>,
-    // options?: HookOptions<Pick<EventsMap, E>, E, Options>
-
-    // events: X<NormalizeEventsMap<EventsMap>, E>,
-    options?: HookOptions<EventsMap, E, Options>
+  <SubMap extends EventsMapConstraint<EventsMap, SubMap>>(
+    events: SubMap,
+    options?: HookOptions<SubMap, keyof SubMap, Options>
   ): void
-  // <E extends keyof EventsMap, M extends NormalizeEventsMap<Pick<EventsMap, E>>>(
-  //   events: M,
-  // options?: HookOptions<M, E, Options>
-  // ): void
 
   <EventName extends keyof EventsMap>(
-    event: EventName | EventName[],
+    event: EventNameConstraint<EventName>,
     callback: (e: GetEventType<EventsMap, EventName>) => void,
     options?: HookOptions<EventsMap, EventName, Options>
   ): void
@@ -163,6 +150,8 @@ export interface ICreateUseEvent {
 
 // ---
 //#region utils
+export type Fn = (...args: any[]) => any
+
 type IfNever<T, Y, N = T> = [T] extends [never] ? Y : N
 type IfAny<T, Y, N = T> = 0 extends 1 & T ? Y : N
 
@@ -177,11 +166,20 @@ type NormalizeEventFromEventsMap<T> = T extends (e: infer U) => any
     : T
 
 type NormalizeEventsMap<M> = {
-  // [E in NormKey<keyof M>]?: (
   [E in keyof M]?: (e: NormalizeEventFromEventsMap<Required<M>[E]>) => void
 }
 
-// type NormKey<T> = Exclude<T, number | symbol>
+// ---
 
-export type Fn = (...args: any[]) => any
+type EventsMapConstraint<EventsMap, SubMap> = NormalizeEventsMap<EventsMap> &
+  IntellisenseHackForObject<SubMap, EventsMap>
+
+type EventNameConstraint<E> = E | IntellisenseHackForArray<E[]>
+
+type IntellisenseHackForObject<T1, T2> = Record<
+  Exclude<keyof T1, keyof T2>,
+  never
+>
+type IntellisenseHackForArray<T> = Omit<T, Extract<keyof any[], symbol>>
+
 //#endregion
