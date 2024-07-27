@@ -59,8 +59,8 @@ type GetEventType<
   Event extends keyof EventsMap
     ? /* Some event maps are defined in "{ name?: callback }" format.
        * Inferring event type from an optional callback will result in an optional value.
-       * So have to apply `Required` to map to avoid that.*/
-      NormalizeEventFromEventsMap<Required<EventsMap>[Event]>
+       * Yet in runtime it's obviously impossible. So patch inferred type to exclude `undefined` values. */
+      Exclude<NormalizeEventFromEventsMap<EventsMap[Event]>, undefined>
     : never
 >
 //#endregion
@@ -140,7 +140,7 @@ export interface IUseEventPartial<
 export interface ICreateUseEvent {
   <EventsMap extends object, Options extends object = never>(
     useTarget: () => EventTarget | null
-  ): IUseEventPartial<EventsMap, Options>
+  ): IUseEventPartial<NormalizeEventsMap<EventsMap>, Options>
 
   <EventsMap extends object, Options extends object = never>(): IUseEvent<
     EventsMap,
