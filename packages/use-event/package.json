@@ -3,6 +3,7 @@
   "version": "1.0.1",
   "license": "MIT",
   "description": "React hook for listening to events",
+  "homepage": "https://github.com/jeron-diovis/nwbm/blob/HEAD/packages/use-event/README.md",
   "author": "Jeron Diovis <void.jeron.diovis@gmail.com>",
   "keywords": [
     "react",
@@ -28,8 +29,7 @@
   "types": "./dist/index.d.ts",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/jeron-diovis/nwbm.git",
-    "directory": "packages/use-event"
+    "url": "git+https://github.com/jeron-diovis/nwbm.git"
   },
   "publishConfig": {
     "access": "public"
