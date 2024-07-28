@@ -13,15 +13,15 @@ import { useDomEvent } from '@nwbm/use-event'
 
 const Component = () => {
   const ref = useRef(null)
-  useEvent(ref, 'click', e => console.log(e))
+  useDomEvent(ref, 'click', e => console.log(e))
   return <div ref = {ref} />
 }
 
 // Listener options 
-useEvent(ref, 'scroll', e => console.log(e), { passive: true })
+useDomEvent(ref, 'scroll', e => console.log(e), { passive: true })
 
 // Listen to multiple events at once
-useEvent(ref, ['click', 'keypress'], e => console.log(e))
+useDomEvent(ref, ['click', 'keypress'], e => console.log(e))
 ```
 
 More details in [dedicated page](/packages/use-event/docs/useDomEvent.md).
