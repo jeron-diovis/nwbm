@@ -53,7 +53,7 @@ So for better types support additional tools are provided:
 
 ### `useDomEvent`
 
-For DOM elements specifically – use the [`useDomEvent`](/docs/useDomEvent.md) hook. It does all the same as `useEvent`,
+For DOM elements specifically – use the [`useDomEvent`](/packages/use-event/docs/useDomEvent.md) hook. It does all the same as `useEvent`,
 but is strongly typed for usage with `HTMLElement` / `Document` / `Window` targets.
 
 ---
