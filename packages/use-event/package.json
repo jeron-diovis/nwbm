@@ -1,5 +1,5 @@
 {
-  "name": "@yai/use-event",
+  "name": "@nwbm/use-event",
   "version": "1.0.0",
   "license": "MIT",
   "description": "React hook for listening to events",

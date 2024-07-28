@@ -15,6 +15,10 @@ rsync -a --exclude=node_modules \
   $PKG_PATH
 
 cd $PKG_PATH
-npm pkg set name=@yai/$NAME
+
+NS=nwbm
+
+npm pkg set name=$NS/$NAME
 npm pkg set repository.directory=packages/$NAME
+
 echo "# $NAME" > README.md
