@@ -1,6 +1,6 @@
 {
   "name": "@nwbm/use-event",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "license": "MIT",
   "description": "React hook for listening to events",
   "author": "Jeron Diovis <void.jeron.diovis@gmail.com>",
