@@ -15,30 +15,24 @@ export const useEvent: IUseEvent = (...args: any[]) => {
   // useEvent(target, ['e1', 'e2'], callback, options?)
   if (typeof eventOrListeners === 'string' || Array.isArray(eventOrListeners)) {
     events = eventOrListeners
-    listeners = rest[0] as Fn
+    listeners = rest[0]
     options = rest[1]
   }
   // useEvent(target, { event: callback }, options?)
   else {
     events = Object.keys(eventOrListeners)
-    listeners = eventOrListeners as Listeners
-    options = rest[0] as UseEventOptions
+    listeners = eventOrListeners
+    options = rest[0]
   }
 
   // ---
 
   const refListeners = useRef(listeners)
-  // const refEvents = useRef(events)
   const refOptions = useRef(options)
-  // useEffect(() => {
-  //   refListeners.current = listeners
-  //   refEvents.current = events
-  //   refOptions.current = options
-  // })
-
-  refListeners.current = listeners
-  // refEvents.current = events
-  refOptions.current = options
+  useEffect(() => {
+    refListeners.current = listeners
+    refOptions.current = options
+  })
 
   const refActive = useRef(true)
 
@@ -61,11 +55,9 @@ export const useEvent: IUseEvent = (...args: any[]) => {
       refActive.current = true
 
       // ---
-      // resolve event listeners map
-      const listeners = Object.entries(
-        resolveListenersMap(refListeners, events)
-      ).map(
-        ([key, fn]) => [key, toManagedCb(fn, refActive, refOptions)] as const
+      // resolve event listeners
+      const listeners = resolveLiveListeners(refListeners, events).map(
+        ([e, fn]) => [e, toManagedCb(fn, refActive, refOptions)] as const
       )
 
       // ---
@@ -104,33 +96,32 @@ export const useEvent: IUseEvent = (...args: any[]) => {
  * Which means, user can pass in a listeners map full of undefined */
 type Listeners = Record<string, Fn | undefined>
 
-function resolveListenersMap(
-  ref: RefObject<Fn | Listeners>,
+function resolveLiveListeners(
+  refFns: RefObject<Fn | Listeners>,
   events: string | string[]
-): Record<string, Fn> {
-  if (ref.current === null) return {}
+): Array<[string, Fn]> {
+  if (refFns.current === null) return []
 
   const eventNames =
     // useEvent(target, { event: callback })
-    typeof ref.current !== 'function'
-      ? Object.keys(ref.current)
+    typeof refFns.current !== 'function'
+      ? Object.keys(refFns.current)
       : // useEvent(target, ['e1', 'e2'], callback)
         Array.isArray(events)
         ? events
         : // useEvent(target, 'event', callback)
           [events]
 
-  return eventNames.reduce(
-    (m, k) => ({
-      ...m,
-      [k]: (...args: any[]) => {
-        const curr = ref.current
-        const fn = typeof curr === 'function' ? curr : curr?.[k]
-        return fn?.(...args)
-      },
-    }),
-    {}
-  )
+  const getCb = (k: string) =>
+    typeof refFns.current === 'function' ? refFns.current : refFns.current?.[k]
+
+  return eventNames
+    .map((name): null | [string, Fn] =>
+      /* Skip events with explicitly `undefined` callbacks.
+       * Wrapping and attaching those would be obviously pointless. */
+      !getCb(name) ? null : [name, (...args) => getCb(name)?.(...args)]
+    )
+    .filter(x => x !== null)
 }
 
 function toManagedCb(
@@ -138,7 +129,7 @@ function toManagedCb(
   refActive: RefObject<boolean>,
   refOptions: RefObject<UseEventOptions | undefined>
 ): Fn {
-  return (...args: any[]) => {
+  return (...args: any[]): void => {
     /* Skip listener invocation if hook is already not active at that moment.
      * I.e., prevent cases of "can't update state on unmounted component" with bubbling events. */
     if (!refActive.current) return
@@ -146,7 +137,7 @@ function toManagedCb(
     /* User's own logic of skipping listener invocation. */
     if (refOptions.current?.filter?.(args[0]) === false) return
 
-    return fn(...args)
+    fn(...args)
   }
 }
 //#endregion
