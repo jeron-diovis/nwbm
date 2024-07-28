@@ -13,31 +13,31 @@ import { useDomEvent } from '@nwbm/use-event'
 // Basic usage
 const Component = () => {
   const ref = useRef(null)
-  useEvent(ref, 'click', e => console.log(e))
+  useDomEvent(ref, 'click', e => console.log(e))
   return <div ref = {ref} />
 }
 
 // Supports event listeners options
-useEvent(ref, 'click', e => console.log(e), {
+useDomEvent(ref, 'click', e => console.log(e), {
   capture: true,
   passive: true,
 })
 
 // Listen to multiple events at once
-useEvent(ref, ['click', 'keypress'], e => console.log(e))
+useDomEvent(ref, ['click', 'keypress'], e => console.log(e))
 
 // Or with different listener for each event
-useEvent(ref, {
+useDomEvent(ref, {
   'click': e => console.log(e),
   'keypress': e => console.log(e),
 })
 
 // Listen to document events.
 // SSR-safe – no need for `if typeof document === 'undefined' ...`
-useEvent('document', 'click', e => console.log(e))
+useDomEvent('document', 'click', e => console.log(e))
 
 // Same for window
-useEvent('window', 'click', e => console.log(e))
+useDomEvent('window', 'click', e => console.log(e))
 ```
 
 ## API
