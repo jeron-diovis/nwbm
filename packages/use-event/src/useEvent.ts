@@ -28,11 +28,17 @@ export const useEvent: IUseEvent = (...args: any[]) => {
   // ---
 
   const refListeners = useRef(listeners)
+  // const refEvents = useRef(events)
   const refOptions = useRef(options)
-  useEffect(() => {
-    refListeners.current = listeners
-    refOptions.current = options
-  })
+  // useEffect(() => {
+  //   refListeners.current = listeners
+  //   refEvents.current = events
+  //   refOptions.current = options
+  // })
+
+  refListeners.current = listeners
+  // refEvents.current = events
+  refOptions.current = options
 
   const refActive = useRef(true)
 
@@ -57,12 +63,10 @@ export const useEvent: IUseEvent = (...args: any[]) => {
       // ---
       // resolve event listeners map
       const listeners = Object.entries(
-        resolveListeners(refListeners.current, events)
+        resolveListenersMap(refListeners, events)
+      ).map(
+        ([key, fn]) => [key, toManagedCb(fn, refActive, refOptions)] as const
       )
-        .map(([key, fn]) =>
-          !fn ? null : ([key, toManagedCb(fn, refActive, refOptions)] as const)
-        )
-        .filter(x => x !== null)
 
       // ---
       // sub / unsub
@@ -97,37 +101,43 @@ export const useEvent: IUseEvent = (...args: any[]) => {
 //#region resolve listeners
 /* Listeners map is defined as { key?: Fn }.
  * Technically this is equivalent to "{ key?: Fn | undefined }" (for some weird TS reason).
- * Which means, user can pass in a listeners map full of undefined –
- * and we should handle those gracefully. */
+ * Which means, user can pass in a listeners map full of undefined */
 type Listeners = Record<string, Fn | undefined>
 
-function resolveListeners(
-  fns: Fn | Listeners,
+function resolveListenersMap(
+  ref: RefObject<Fn | Listeners>,
   events: string | string[]
-): Listeners {
-  // useEvent(target, { event: callback })
-  if (typeof fns !== 'function') {
-    return fns
-  }
+): Record<string, Fn> {
+  if (ref.current === null) return {}
 
-  // useEvent(target, ['e1', 'e2'], callback)
-  if (Array.isArray(events)) {
-    return events.reduce((m, k) => ({ ...m, [k]: fns }), {})
-  }
+  const eventNames =
+    // useEvent(target, { event: callback })
+    typeof ref.current !== 'function'
+      ? Object.keys(ref.current)
+      : // useEvent(target, ['e1', 'e2'], callback)
+        Array.isArray(events)
+        ? events
+        : // useEvent(target, 'event', callback)
+          [events]
 
-  // useEvent(target, 'event', callback)
-  return { [events]: fns }
+  return eventNames.reduce(
+    (m, k) => ({
+      ...m,
+      [k]: (...args: any[]) => {
+        const curr = ref.current
+        const fn = typeof curr === 'function' ? curr : curr?.[k]
+        return fn?.(...args)
+      },
+    }),
+    {}
+  )
 }
 
 function toManagedCb(
-  fn: Fn | undefined,
+  fn: Fn,
   refActive: RefObject<boolean>,
   refOptions: RefObject<UseEventOptions | undefined>
 ): Fn {
-  /* Although we can silently wrap undefined listeners,
-   * there would be no point in attaching them then. So forbid it. */
-  if (!fn) throw new Error('listener is undefined')
-
   return (...args: any[]) => {
     /* Skip listener invocation if hook is already not active at that moment.
      * I.e., prevent cases of "can't update state on unmounted component" with bubbling events. */

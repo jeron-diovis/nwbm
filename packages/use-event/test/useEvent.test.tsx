@@ -123,8 +123,10 @@ describe('useEvent', () => {
     it('should handle explicitly undefined listeners', () => {
       const emitter = new EventEmitter()
 
-      const scenario = () =>
+      const scenario = () => {
         renderHook(() => useEvent(emitter, { test: undefined }))
+        emitter.emit('test')
+      }
 
       expect(scenario).not.toThrow()
     })
