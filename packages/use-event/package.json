@@ -28,6 +28,7 @@
   "scripts": {
     "dev": "npm run test:w",
     "build": "vite build -c vite.config.lib.ts",
+    "demo": "vite demo",
     "stat": "vite-bundle-visualizer -c vite.config.lib.ts -o stats/stats.html",
     "lint": "npm run lint:js && npm run lint:css && npm run lint:ts && npm run lint:ts:tests",
     "preview": "vite preview",
