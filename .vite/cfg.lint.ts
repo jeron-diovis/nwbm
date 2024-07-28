@@ -9,7 +9,7 @@ interface LintScripts {
   stylelint?: string
 }
 
-type CheckerTsConfig = Parameters<typeof checker>[0]['typescript']
+type CheckerTsConfig = NonNullable<Parameters<typeof checker>[0]['typescript']>
 
 export const useLint = (scripts: LintScripts) =>
   defineChunk((_, { vite }) => {
