@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "license": "MIT",
   "description": "React hook for listening to events",
+  "author": "Jeron Diovis <void.jeron.diovis@gmail.com>",
   "keywords": [
     "react",
     "react hook",
@@ -25,6 +26,14 @@
   },
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jeron-diovis/yai.git",
+    "directory": "packages/use-event"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "dev": "npm run test:w",
     "build": "vite build -c vite.config.lib.ts",
