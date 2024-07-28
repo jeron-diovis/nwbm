@@ -11,13 +11,13 @@ Supports targets providing any of following interfaces:
  ---
 
 ```sh  
-npm install -S @yai/use-event
+npm install -S @nwbm/use-event
 ```  
 
 ---
 
 ```ts
-import { useEvent } from '@yai/use-event'
+import { useEvent } from '@nwbm/use-event'
 
 // With EventEmitter
 const emitter = new EventEmitter()
@@ -63,7 +63,7 @@ but is strongly typed for usage with `HTMLElement` / `Document` / `Window` targe
 For usage with arbitrary emitter, you can define your own version of `useEvent` with explicit events map:
 
 ```ts
-import {createUseEvent} from "@yai/use-event"
+import { createUseEvent } from "@nwbm/use-event"
 
 type MyEvent = { foo: boolean }
 type MyEventsMap = {

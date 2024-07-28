@@ -28,7 +28,7 @@
   "types": "./dist/index.d.ts",
   "repository": {
     "type": "git",
-    "url": "https://github.com/jeron-diovis/yai.git",
+    "url": "https://github.com/jeron-diovis/nwbm.git",
     "directory": "packages/use-event"
   },
   "publishConfig": {

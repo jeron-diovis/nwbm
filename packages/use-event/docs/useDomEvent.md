@@ -4,11 +4,11 @@ Yet another implementation of React hook for listening to DOM events.
 
 ---
 ```sh
-npm install -S @yai/use-event
+npm install -S @nwbm/use-event
 ```
 
 ```ts
-import { useDomEvent } from '@yai/use-event'
+import { useDomEvent } from '@nwbm/use-event'
 
 // Basic usage
 const Component = () => {
@@ -57,7 +57,7 @@ useEvent('window', 'click', e => console.log(e))
 
 ## [Why need yet another implementation?](https://xkcd.com/927/)
 
-| Feature                                          | @yai/use-event                               | [@react-hook/event](https://github.com/jaredLunde/react-hook/blob/master/packages/event/README.md) | [@custom-react-hooks/use-event-listener](https://github.com/djkepa/custom-react-hooks/blob/main/packages/use-event-listener/README.md) | [react-use/useEvent](https://github.com/streamich/react-use/blob/master/docs/useEvent.md)
+| Feature                                          | @nwbm/use-event                               | [@react-hook/event](https://github.com/jaredLunde/react-hook/blob/master/packages/event/README.md) | [@custom-react-hooks/use-event-listener](https://github.com/djkepa/custom-react-hooks/blob/main/packages/use-event-listener/README.md) | [react-use/useEvent](https://github.com/streamich/react-use/blob/master/docs/useEvent.md)
 |--------------------------------------------------|----------------------------------------------| ----- | ----- | ----- |
 | Infer precise event type from `target` parameter | ✅                                            | ✅ | ❌ | ❌ | 
 | Subscribe to list of events                      | ✅                                            |❌ |✅ |❌ |

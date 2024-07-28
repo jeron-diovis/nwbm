@@ -1,4 +1,4 @@
-# @yai/use-event
+# @nwbm/use-event
 
 React hooks for subscribing to event emitters.
 
@@ -9,7 +9,7 @@ React hooks for subscribing to event emitters.
 Subscribe to events on DOM elements.
 
 ```ts
-import { useDomEvent } from '@yai/use-event'
+import { useDomEvent } from '@nwbm/use-event'
 
 const Component = () => {
   const ref = useRef(null)
@@ -37,7 +37,7 @@ Supports targets providing any of following interfaces:
 - `addListener` / `removeListener`
 
 ```ts  
-import { useEvent } from '@yai/use-event'
+import { useEvent } from '@nwbm/use-event'
 
 // With EventEmitter
 const emitter = new EventEmitter()
