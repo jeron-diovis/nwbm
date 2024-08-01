@@ -39,13 +39,14 @@ export const useBuildLib = (cfg: BuildLibConfig) =>
         formats: ['es', 'cjs'],
         fileName: 'index',
       },
-      minify: false,
+      minify: true,
       sourcemap: true,
       copyPublicDir: false,
 
       rollupOptions: {
         plugins: [
           terser({
+            mangle: false,
             format: {
               comments: false,
             },
