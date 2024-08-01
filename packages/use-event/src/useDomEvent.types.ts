@@ -59,6 +59,21 @@ export interface IUseDomEvent {
     },
     options?: UseDomEventOptions<DocumentEventMap[E]>
   ): void
+
+  <E extends keyof VisualViewportEventMap>(
+    el: 'visualViewport',
+    event: E | E[],
+    callback: VisualViewportListener<E>,
+    options?: UseDomEventOptions<NormalizedVisualViewportEventMap[E]>
+  ): void
+
+  <E extends keyof VisualViewportEventMap>(
+    el: 'visualViewport',
+    events: {
+      [K in E]?: VisualViewportListener<K>
+    },
+    options?: UseDomEventOptions<NormalizedVisualViewportEventMap[E]>
+  ): void
 }
 
 // ---
@@ -76,3 +91,29 @@ type WindowListener<E extends keyof WindowEventMap> = Listener<
 type DocumentListener<E extends keyof DocumentEventMap> = Listener<
   DocumentEventMap[E]
 >
+type VisualViewportListener<E extends keyof VisualViewportEventMap> = Listener<
+  NormalizedVisualViewportEventMap[E]
+>
+
+// ---
+
+type NormalizedVisualViewportEventMap = {
+  [K in keyof VisualViewportEventMap]: VisualViewportEvent<K>
+}
+
+type VisualViewportEvent<E extends keyof VisualViewportEventMap> = Overwrite<
+  VisualViewportEventMap[E],
+  {
+    target: VisualViewport
+    srcElement: VisualViewport
+    currentTarget: null
+  }
+>
+
+// ---
+
+type Overwrite<T extends object, O extends { [K in keyof T]?: unknown }> = Omit<
+  T,
+  keyof O
+> &
+  O
