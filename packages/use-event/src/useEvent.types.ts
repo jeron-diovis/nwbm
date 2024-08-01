@@ -180,6 +180,6 @@ type IntellisenseHackForObject<T1, T2> = Record<
   Exclude<keyof T1, keyof T2>,
   never
 >
-type IntellisenseHackForArray<T> = Omit<T, Extract<keyof any[], symbol>>
+type IntellisenseHackForArray<T> = Omit<T, keyof unknown[]>
 
 //#endregion

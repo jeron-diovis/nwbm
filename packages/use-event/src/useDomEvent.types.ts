@@ -22,12 +22,12 @@ export interface IUseDomEvent {
     options?: UseDomEventOptions<HTMLElementEventMap[E]>
   ): void
 
-  <T extends HTMLElement, M extends keyof HTMLElementEventMap>(
+  <T extends HTMLElement, E extends keyof HTMLElementEventMap>(
     el: RefOrVal<T> | null,
-    events: {
-      [E in M]?: ElementListener<E>
-    },
-    options?: UseDomEventOptions<HTMLElementEventMap[M]>
+    events: IntellisenseHackForObject<{
+      [K in E]?: ElementListener<K>
+    }>,
+    options?: UseDomEventOptions<HTMLElementEventMap[E]>
   ): void
 
   <E extends keyof WindowEventMap>(
@@ -39,9 +39,9 @@ export interface IUseDomEvent {
 
   <E extends keyof WindowEventMap>(
     el: 'window',
-    events: {
+    events: IntellisenseHackForObject<{
       [K in E]?: WindowListener<K>
-    },
+    }>,
     options?: UseDomEventOptions<WindowEventMap[E]>
   ): void
 
@@ -54,9 +54,9 @@ export interface IUseDomEvent {
 
   <E extends keyof DocumentEventMap>(
     el: 'document',
-    events: {
+    events: IntellisenseHackForObject<{
       [K in E]?: DocumentListener<K>
-    },
+    }>,
     options?: UseDomEventOptions<DocumentEventMap[E]>
   ): void
 
@@ -69,15 +69,14 @@ export interface IUseDomEvent {
 
   <E extends keyof VisualViewportEventMap>(
     el: 'visualViewport',
-    events: {
+    events: IntellisenseHackForObject<{
       [K in E]?: VisualViewportListener<K>
-    },
+    }>,
     options?: UseDomEventOptions<NormalizedVisualViewportEventMap[E]>
   ): void
 }
 
 // ---
-
 export type RefOrVal<T> = RefObject<T> | T
 
 type Listener<E> = (event: E) => void
@@ -117,3 +116,5 @@ type Overwrite<T extends object, O extends { [K in keyof T]?: unknown }> = Omit<
   keyof O
 > &
   O
+
+type IntellisenseHackForObject<T> = Omit<T, keyof unknown[]>
