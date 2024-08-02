@@ -65,6 +65,22 @@ describe('useDomEvent', () => {
     expect(cb).toHaveBeenCalled()
   })
 
+  it('should add listener to visualViewport', () => {
+    const cb = vi.fn()
+
+    // jsdom doesn't have `window.visualViewport` implemented. Have to mock it.
+    const { getByTestId } = render(<div data-testid="test" />)
+    const fakeVisualViewport = getByTestId('test')
+    vi.stubGlobal('visualViewport', fakeVisualViewport)
+
+    renderHook(() => useDomEvent('visualViewport', 'scroll', cb))
+
+    fireEvent.scroll(fakeVisualViewport)
+    vi.unstubAllGlobals()
+
+    expect(cb).toHaveBeenCalled()
+  })
+
   it('should not execute listener if "filter" option returns false', () => {
     const cb = vi.fn()
 
