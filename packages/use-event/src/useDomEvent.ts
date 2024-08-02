@@ -1,9 +1,7 @@
 import { useRef } from 'react'
 
-import { IUseDomEvent, RefOrVal } from './useDomEvent.types'
+import { IUseDomEvent, Target } from './useDomEvent.types'
 import { useEvent } from './useEvent'
-
-type Target = RefOrVal<HTMLElement> | 'window' | 'document' | 'visualViewport'
 
 export const useDomEvent: IUseDomEvent = (target: Target, ...args: any[]) => {
   const refGlobalTarget = useRef<GlobalTarget>()

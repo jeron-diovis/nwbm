@@ -2,97 +2,71 @@ import { RefObject } from 'react'
 
 import { UseEventOptions } from './useEvent.types'
 
-export interface UseDomEventOptions<E extends Event = Event>
+export interface UseDomEventOptions<E = Event>
   extends UseEventOptions<E>,
     AddEventListenerOptions {}
 
-/**
- * Tweaked version of `@react-hook/event`, which allows for:
- * - configuring listener options
- * - add listener on condition
- * - SSR-safe listeners for window / document, without need to manually check those globals existence
- *
- * @see https://github.com/jaredLunde/react-hook/blob/master/packages/event/README.md
- */
+export type Target =
+  | 'window'
+  | 'document'
+  | 'visualViewport'
+  | RefOrVal<HTMLElement>
+  | null
+
+type Hack<A, B> = Record<Exclude<keyof A, keyof B>, never>
+type XHack<A, B> = A & Hack<A, B>
+type Arg<T> = T extends (x: infer A) => unknown ? A : never
+
 export interface IUseDomEvent {
-  <T extends HTMLElement, E extends keyof HTMLElementEventMap>(
-    el: RefOrVal<T> | null,
+  /*
+   * filter - ok
+   * hint - FAIL (string props)
+   * random prop – perfect (highlight precisely, "does not exist in type...")
+   * array prop - meh (error on overload level, "does not exist in type...")
+   */
+  /*<T extends Target, E extends keyof GetMap<T>>(
+    el: T,
+    events: {
+      [K in E]?: Listener<GetMap<T>[K]>
+    },
+    options?: UseDomEventOptions<GetMap<T>[E]>
+  ): void*/
+
+  /*
+   * filter - ok
+   * hint - ok (only String.iterator, tolerable)
+   * random prop – ok (highlight precisely, "not assignable to never")
+   * array prop - meh (error on overload level,  "not assignable to never")
+   */
+  <T extends Target, M extends XMap<GetMap<T>>>(
+    el: T,
+    events: XHack<M, GetMap<T>>,
+    options?: UseDomEventOptions<Arg<M[keyof M]>>
+  ): void
+
+  <T extends Target, E extends keyof GetMap<T>>(
+    el: T,
     event: E | E[],
-    callback: ElementListener<E>,
-    options?: UseDomEventOptions<HTMLElementEventMap[E]>
-  ): void
-
-  <T extends HTMLElement, E extends keyof HTMLElementEventMap>(
-    el: RefOrVal<T> | null,
-    events: IntellisenseHackForObject<{
-      [K in E]?: ElementListener<K>
-    }>,
-    options?: UseDomEventOptions<HTMLElementEventMap[E]>
-  ): void
-
-  <E extends keyof WindowEventMap>(
-    el: 'window',
-    event: E | E[],
-    callback: WindowListener<E>,
-    options?: UseDomEventOptions<WindowEventMap[E]>
-  ): void
-
-  <E extends keyof WindowEventMap>(
-    el: 'window',
-    events: IntellisenseHackForObject<{
-      [K in E]?: WindowListener<K>
-    }>,
-    options?: UseDomEventOptions<WindowEventMap[E]>
-  ): void
-
-  <E extends keyof DocumentEventMap>(
-    el: 'document',
-    event: E | E[],
-    callback: DocumentListener<E>,
-    options?: UseDomEventOptions<DocumentEventMap[E]>
-  ): void
-
-  <E extends keyof DocumentEventMap>(
-    el: 'document',
-    events: IntellisenseHackForObject<{
-      [K in E]?: DocumentListener<K>
-    }>,
-    options?: UseDomEventOptions<DocumentEventMap[E]>
-  ): void
-
-  <E extends keyof VisualViewportEventMap>(
-    el: 'visualViewport',
-    event: E | E[],
-    callback: VisualViewportListener<E>,
-    options?: UseDomEventOptions<NormalizedVisualViewportEventMap[E]>
-  ): void
-
-  <E extends keyof VisualViewportEventMap>(
-    el: 'visualViewport',
-    events: IntellisenseHackForObject<{
-      [K in E]?: VisualViewportListener<K>
-    }>,
-    options?: UseDomEventOptions<NormalizedVisualViewportEventMap[E]>
+    callback: Listener<GetMap<T>[E]>,
+    options?: UseDomEventOptions<GetMap<T>[E]>
   ): void
 }
 
 // ---
-export type RefOrVal<T> = RefObject<T> | T
+
+type GetMap<T> = T extends 'window'
+  ? WindowEventMap
+  : T extends 'document'
+    ? DocumentEventMap
+    : T extends 'visualViewport'
+      ? NormalizedVisualViewportEventMap
+      : HTMLElementEventMap
+
+type XMap<M> = EventMap<{
+  [K in keyof M]?: Listener<M[K]>
+}>
 
 type Listener<E> = (event: E) => void
-
-type ElementListener<E extends keyof HTMLElementEventMap> = Listener<
-  HTMLElementEventMap[E]
->
-type WindowListener<E extends keyof WindowEventMap> = Listener<
-  WindowEventMap[E]
->
-type DocumentListener<E extends keyof DocumentEventMap> = Listener<
-  DocumentEventMap[E]
->
-type VisualViewportListener<E extends keyof VisualViewportEventMap> = Listener<
-  NormalizedVisualViewportEventMap[E]
->
 
 // ---
 
@@ -102,6 +76,7 @@ type NormalizedVisualViewportEventMap = {
 
 type VisualViewportEvent<E extends keyof VisualViewportEventMap> = Overwrite<
   VisualViewportEventMap[E],
+  /* from practical experience, this is how these props always are: */
   {
     target: VisualViewport
     srcElement: VisualViewport
@@ -111,10 +86,25 @@ type VisualViewportEvent<E extends keyof VisualViewportEventMap> = Overwrite<
 
 // ---
 
+type RefOrVal<T> = RefObject<T> | T
+
 type Overwrite<T extends object, O extends { [K in keyof T]?: unknown }> = Omit<
   T,
   keyof O
 > &
   O
 
-type IntellisenseHackForObject<T> = Omit<T, keyof unknown[]>
+/* A hack to improve a bit an intellisense for object literals.
+ * Because of overloaded function interface, where one option uses objects and other one uses arrays,
+ * typescript is confused when trying to suggest props for an object version.
+ * Array is object too – so suggested keys include all array instance props,
+ * which is super confusing for a user.
+ * So we explicitly exclude all of those.
+ *
+ * This will NOT help when you already provided an invalid key to an object –
+ * in that case, TS doesn't understand at all what kind of object is that,
+ * and will suggest everything it knows, regardless of this hack.
+ * But aside from that case, it really helps to clean up suggestions.
+ *
+ * Type is abstractly named `EventMap` just for it to look nice in TS hint and error messages. */
+type EventMap<T> = Omit<T, keyof unknown[] | keyof string>
