@@ -1,27 +1,10 @@
 import { useEffect, useRef } from 'react'
 
-import { deepEqual, sameValueZeroEqual, shallowEqual } from 'fast-equals'
-
-// ---
-
-type Comparator<T = unknown> = (a: T, b: T) => boolean
-
-// ---
-
-type ComparatorOption<T> = Comparator<T> | 'plain' | 'shallow' | 'deep'
-
-function resolveComparator<T>(x: ComparatorOption<T>) {
-  switch (x) {
-    case 'plain':
-      return sameValueZeroEqual
-    case 'shallow':
-      return shallowEqual
-    case 'deep':
-      return deepEqual
-    default:
-      return x
-  }
-}
+import {
+  ComparatorOption,
+  DEFAULT_COMPARATOR_OPTION,
+  resolveComparator,
+} from './utils'
 
 export type UseOnChangeOptions<T = unknown> = {
   eq?: ComparatorOption<T>
@@ -45,7 +28,11 @@ export function useOnChange<T>(
 
   useEffect(
     () => {
-      const { runOnMount = false, eq = 'shallow', filter } = refOptions.current
+      const {
+        runOnMount = false,
+        eq = DEFAULT_COMPARATOR_OPTION,
+        filter,
+      } = refOptions.current
 
       const isFirstRun = refIsFirstRun.current
       refIsFirstRun.current = false
