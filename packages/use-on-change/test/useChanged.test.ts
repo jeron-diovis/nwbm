@@ -26,46 +26,66 @@ describe('useChanged', () => {
     expect(result.current).toBe(value2)
   })
 
-  describe('comparator', () => {
-    it('deepEqual', () => {
-      const value1 = [1, [2]]
-      const value2 = [1, [3]]
+  describe('options', () => {
+    describe('eq', () => {
+      it('deepEqual', () => {
+        const value1 = [1, [2]]
+        const value2 = [1, [3]]
 
-      const { result, rerender } = renderHook(
-        ({ value }) => useChanged(value, { eq: 'deep' }),
-        {
-          initialProps: { value: value1 },
-        }
-      )
-      expect(result.current).toBe(value1)
-      rerender({ value: [1, [2]] })
-      expect(result.current).toBe(value1)
-      rerender({ value: value2 })
-      expect(result.current).toBe(value2)
+        const { result, rerender } = renderHook(
+          ({ value }) => useChanged(value, { eq: 'deep' }),
+          {
+            initialProps: { value: value1 },
+          }
+        )
+        expect(result.current).toBe(value1)
+        rerender({ value: [1, [2]] })
+        expect(result.current).toBe(value1)
+        rerender({ value: value2 })
+        expect(result.current).toBe(value2)
+      })
+
+      it('SameValueZero', () => {
+        const value1 = [1, 2]
+        const value2 = [1, 2]
+
+        const { result, rerender } = renderHook(
+          ({ value }) => useChanged(value, { eq: 'plain' }),
+          {
+            initialProps: { value: value1 },
+          }
+        )
+        expect(result.current).toBe(value1)
+        rerender({ value: value2 })
+        expect(result.current).toBe(value2)
+      })
+
+      it('custom', () => {
+        const value1 = [1, 2]
+        const value2 = [3, 4]
+
+        const { result, rerender } = renderHook(
+          ({ value }) =>
+            useChanged(value, { eq: (a, b) => a.length === b.length }),
+          {
+            initialProps: { value: value1 },
+          }
+        )
+        expect(result.current).toBe(value1)
+        rerender({ value: value2 })
+        expect(result.current).toBe(value1)
+      })
     })
 
-    it('SameValueZero', () => {
-      const value1 = [1, 2]
-      const value2 = [1, 2]
-
-      const { result, rerender } = renderHook(
-        ({ value }) => useChanged(value, { eq: 'plain' }),
-        {
-          initialProps: { value: value1 },
-        }
-      )
-      expect(result.current).toBe(value1)
-      rerender({ value: value2 })
-      expect(result.current).toBe(value2)
-    })
-
-    it('custom', () => {
-      const value1 = [1, 2]
-      const value2 = [3, 4]
+    it('by', () => {
+      const value1 = { a: [1, 2, 3] }
+      const value2 = { a: [3, 2, 1] }
 
       const { result, rerender } = renderHook(
         ({ value }) =>
-          useChanged(value, { eq: (a, b) => a.length === b.length }),
+          useChanged(value, {
+            by: x => [...x.a].sort(),
+          }),
         {
           initialProps: { value: value1 },
         }

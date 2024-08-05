@@ -39,7 +39,7 @@
     "stylelint-config-standard-scss": "^13.1.0",
     "stylelint-prettier": "^5.0.0",
     "symlink-dir": "^6.0.0",
-    "typescript": "^5.2.2",
+    "typescript": "^5.5.4",
     "typescript-plugin-css-modules": "^5.1.0",
     "vite": "^5.2.0",
     "vite-bundle-visualizer": "^1.2.1",
