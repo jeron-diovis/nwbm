@@ -40,5 +40,8 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "utility-types": "^3.11.0"
+  },
+  "dependencies": {
+    "fast-equals": "^5.0.1"
   }
 }
