@@ -63,7 +63,7 @@ export const useBuildLib = (cfg: BuildLibConfig) =>
           {
             exclude: ['**/*.{test,spec}.{ts,tsx}'],
             insertTypesEntry: true,
-            // rollupTypes: true, // merge all declarations into a single file
+            rollupTypes: true, // merge all declarations into a single file
           },
           cfg.dts
         )

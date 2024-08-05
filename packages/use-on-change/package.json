@@ -22,7 +22,7 @@
     "stat": "vite-bundle-visualizer -c vite.config.lib.ts -o stats/stats.html",
     "lint": "npm run lint:js && npm run lint:css && npm run lint:ts && npm run lint:ts:tests",
     "preview": "vite preview",
-    "lint:js": "eslint {src,demo} --ext .cjs,.js,.jsx,.ts,.tsx --no-error-on-unmatched-pattern",
+    "lint:js": "eslint {src,demo,test} --ext .cjs,.js,.jsx,.ts,.tsx --no-error-on-unmatched-pattern",
     "lint:ts": "tsc --noEmit",
     "lint:ts:tests": "tsc --noEmit -p tsconfig.test.json",
     "lint:css": "stylelint \"{src,demo}/**/*.{s,}css\" --aei",
@@ -43,5 +43,8 @@
   },
   "dependencies": {
     "fast-equals": "^5.0.1"
+  },
+  "peerDependencies": {
+    "react": ">=18"
   }
 }
