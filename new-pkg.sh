@@ -18,7 +18,7 @@ cd $PKG_PATH
 
 NS=nwbm
 
-npm pkg set name=$NS/$NAME
+npm pkg set name="@$NS/$NAME"
 npm pkg set repository.directory=packages/$NAME
 
 echo "# $NAME" > README.md
