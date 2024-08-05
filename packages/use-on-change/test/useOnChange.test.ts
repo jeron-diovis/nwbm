@@ -156,5 +156,50 @@ describe('useOnChange', () => {
         expect(cb).toHaveBeenCalledWith([1, [3]], [1, [2]])
       })
     })
+
+    it('enabled: should skip comparator when set to false', () => {
+      const cb = vi.fn()
+      const comparator = vi.fn((a, b) => a === b)
+
+      const { rerender } = renderHook(
+        ({ value, enabled }) =>
+          useOnChange(value, cb, {
+            enabled,
+            eq: comparator,
+          }),
+        {
+          initialProps: { value: 'a', enabled: false },
+        }
+      )
+
+      rerender({ value: 'b', enabled: false })
+      expect(cb).not.toHaveBeenCalled()
+      expect(comparator).not.toHaveBeenCalled()
+      rerender({ value: 'b', enabled: true })
+      expect(cb).toHaveBeenCalledWith('b', 'a')
+    })
+
+    it('filter: should skip callback invocation when returns false', () => {
+      const cb = vi.fn()
+      const filter = vi.fn((next, prev) => next / prev === 2)
+
+      const { rerender } = renderHook(
+        ({ value }) =>
+          useOnChange(value, cb, {
+            filter,
+          }),
+        {
+          initialProps: { value: 1 },
+        }
+      )
+
+      rerender({ value: 3 })
+      expect(filter).toHaveBeenCalledWith(3, 1)
+      expect(cb).not.toHaveBeenCalled()
+
+      rerender({ value: 6 })
+      expect(filter).toHaveBeenCalledWith(6, 3)
+      expect(cb).toHaveBeenCalledWith(6, 3)
+    })
   })
 })

@@ -26,38 +26,49 @@ function resolveComparator<T>(x: ComparatorOption<T>) {
 export type UseOnChangeOptions<T = unknown> = {
   eq?: ComparatorOption<T>
   runOnMount?: boolean
+  enabled?: boolean
+  filter?: (value: T, prev: T) => boolean
 }
 
 export function useOnChange<T>(
   value: T,
   callback: (current: T, prev: T) => void,
-  options: UseOnChangeOptions<T> = {}
+  { enabled = true, ...options }: UseOnChangeOptions<T> = {}
 ): void {
-  const { eq = 'shallow', runOnMount = false } = options
-
-  const isFirstRun = useRef(true)
+  const refIsFirstRun = useRef(true)
   const previous = useRef(value)
+
+  const refOptions = useRef(options)
+  useEffect(() => {
+    refOptions.current = options
+  })
 
   useEffect(
     () => {
+      const { runOnMount = false, eq = 'shallow', filter } = refOptions.current
+
+      const isFirstRun = refIsFirstRun.current
+      refIsFirstRun.current = false
+
+      if (!enabled) return
+
       const prev = previous.current
-      if (isFirstRun.current && runOnMount) {
-        isFirstRun.current = false
-        callback(value, prev)
+
+      if (isFirstRun) {
+        if (runOnMount) callback(value, prev)
         return
       }
 
-      const compare = resolveComparator(eq)
-      if (!compare(value, prev)) {
-        previous.current = value
-        callback(value, prev)
-      }
+      const equals = resolveComparator(eq)
+      if (equals(value, prev)) return
+      previous.current = value
+      if (filter?.(value, prev) === false) return
+      callback(value, prev)
     },
-    /* Don't depend on callback, because it doesn't matter. It's only about value.
-     * Don't depend on comparator. No idea what's the real usecase for changing comparators between updates.
-     * Don't depend on `runOnMount`, as it's by definition only for the very first render.
-     * Depend on value – it will save runs of the effect for plain values. */
+    /* Depend on value – by definition.
+     * Depend on `enabled` - as it's meant to change hook behavior, even if value is the same.
+     * Ignore everything else */
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [value]
+    [value, enabled]
   )
 }
