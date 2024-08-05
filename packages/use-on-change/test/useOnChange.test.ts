@@ -55,39 +55,106 @@ describe('useOnChange', () => {
     })
   })
 
-  it('should support custom comparator', () => {
-    const cb = vi.fn()
+  describe('options', () => {
+    it('runOnMount', () => {
+      const cb = vi.fn()
 
-    const { rerender } = renderHook(
-      ({ value }) =>
-        useOnChange(value, cb, {
-          eq: (a, b) => a.length === b.length,
-        }),
-      {
-        initialProps: { value: 'a' },
-      }
-    )
+      renderHook(
+        ({ value }) =>
+          useOnChange(value, cb, {
+            runOnMount: true,
+          }),
+        {
+          initialProps: { value: 42 },
+        }
+      )
 
-    expect(cb).not.toHaveBeenCalled()
-    rerender({ value: 'b' })
-    expect(cb).not.toHaveBeenCalled()
-    rerender({ value: 'cc' })
-    expect(cb).toHaveBeenCalledWith('cc', 'a')
-  })
+      expect(cb).toHaveBeenCalledWith(42, 42)
+    })
 
-  it('should allow to run on mount immediately', () => {
-    const cb = vi.fn()
+    describe('eq', () => {
+      it('should support custom comparator', () => {
+        const cb = vi.fn()
 
-    renderHook(
-      ({ value }) =>
-        useOnChange(value, cb, {
-          runOnMount: true,
-        }),
-      {
-        initialProps: { value: 42 },
-      }
-    )
+        const { rerender } = renderHook(
+          ({ value }) =>
+            useOnChange(value, cb, {
+              eq: (a, b) => a.length === b.length,
+            }),
+          {
+            initialProps: { value: 'a' },
+          }
+        )
 
-    expect(cb).toHaveBeenCalledWith(42, 42)
+        expect(cb).not.toHaveBeenCalled()
+        rerender({ value: 'b' })
+        expect(cb).not.toHaveBeenCalled()
+        rerender({ value: 'cc' })
+        expect(cb).toHaveBeenCalledWith('cc', 'a')
+      })
+
+      it('should use SameValueZero comparator', () => {
+        const cb = vi.fn()
+
+        const { rerender } = renderHook(
+          ({ value }) =>
+            useOnChange(value, cb, {
+              eq: 'plain',
+            }),
+          {
+            initialProps: { value: [1, 2] as any },
+          }
+        )
+
+        rerender({ value: [1, 2] })
+        expect(cb).toHaveBeenCalledWith([1, 2], [1, 2])
+
+        rerender({ value: 1 })
+        rerender({ value: 2 })
+        expect(cb).toHaveBeenCalledWith(2, 1)
+      })
+
+      it('should use shallowEqual comparator', () => {
+        const cb = vi.fn()
+
+        const { rerender } = renderHook(
+          ({ value }) =>
+            useOnChange(value, cb, {
+              eq: 'shallow',
+            }),
+          {
+            initialProps: { value: [1, 2] as any },
+          }
+        )
+
+        rerender({ value: [1, 2] })
+        expect(cb).not.toHaveBeenCalled()
+        rerender({ value: [1, 3] })
+        expect(cb).toHaveBeenCalledWith([1, 3], [1, 2])
+
+        rerender({ value: [1, [2]] })
+        rerender({ value: [1, [2]] })
+        expect(cb).toHaveBeenCalledWith([1, [2]], [1, [2]])
+      })
+
+      it('should use deepEqual comparator', () => {
+        const cb = vi.fn()
+
+        const { rerender } = renderHook(
+          ({ value }) =>
+            useOnChange(value, cb, {
+              eq: 'deep',
+            }),
+          {
+            initialProps: { value: [1, [2]] as any },
+          }
+        )
+
+        rerender({ value: [1, [2]] })
+        expect(cb).not.toHaveBeenCalled()
+        rerender({ value: [1, [3]] })
+        expect(cb).toHaveBeenCalledWith([1, [3]], [1, [2]])
+      })
+    })
   })
 })
