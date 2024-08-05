@@ -5,54 +5,50 @@ import { act, renderHook } from '@testing-library/react'
 import { useOnChange } from '../src'
 
 describe('useOnChange', () => {
-  describe('primitive values', () => {
-    it('should call callback with actual and prev values, when value changes', () => {
-      const cb = vi.fn()
+  it('should call callback with actual and prev values, when value changes', () => {
+    const cb = vi.fn()
 
-      const { result } = renderHook(() => {
-        const [value, setValue] = useState('off')
-        useOnChange(value, cb)
-        return [value, setValue] as const
-      })
-
-      expect(result.current[0]).toBe('off')
-      expect(cb).not.toHaveBeenCalled()
-
-      act(() => result.current[1]('on'))
-
-      expect(result.current[0]).toBe('on')
-      expect(cb).toHaveBeenCalledWith('on', 'off')
+    const { result } = renderHook(() => {
+      const [value, setValue] = useState('off')
+      useOnChange(value, cb)
+      return [value, setValue] as const
     })
 
-    it('should not call callback when value does not change', () => {
-      const cb = vi.fn()
+    expect(result.current[0]).toBe('off')
+    expect(cb).not.toHaveBeenCalled()
 
-      const { rerender } = renderHook(({ value }) => useOnChange(value, cb), {
-        initialProps: { value: 'off' },
-      })
+    act(() => result.current[1]('on'))
 
-      expect(cb).not.toHaveBeenCalled()
-      rerender({ value: 'off' })
-      expect(cb).not.toHaveBeenCalled()
-      rerender({ value: 'on' })
-      expect(cb).toHaveBeenCalledWith('on', 'off')
-    })
+    expect(result.current[0]).toBe('on')
+    expect(cb).toHaveBeenCalledWith('on', 'off')
   })
 
-  describe('shallow-equal', () => {
-    it('should support shallow-equal comparison for object out of the box', () => {
-      const cb = vi.fn()
+  it('should not call callback when value does not change', () => {
+    const cb = vi.fn()
 
-      const { rerender } = renderHook(({ value }) => useOnChange(value, cb), {
-        initialProps: { value: [1, 2] },
-      })
-
-      expect(cb).not.toHaveBeenCalled()
-      rerender({ value: [1, 2] })
-      expect(cb).not.toHaveBeenCalled()
-      rerender({ value: [1, 3] })
-      expect(cb).toHaveBeenCalledWith([1, 3], [1, 2])
+    const { rerender } = renderHook(({ value }) => useOnChange(value, cb), {
+      initialProps: { value: 1 },
     })
+
+    expect(cb).not.toHaveBeenCalled()
+    rerender({ value: 1 })
+    expect(cb).not.toHaveBeenCalled()
+    rerender({ value: 2 })
+    expect(cb).toHaveBeenCalledWith(2, 1)
+  })
+
+  it('should use shallow-equal comparison by default', () => {
+    const cb = vi.fn()
+
+    const { rerender } = renderHook(({ value }) => useOnChange(value, cb), {
+      initialProps: { value: [1, 2] },
+    })
+
+    expect(cb).not.toHaveBeenCalled()
+    rerender({ value: [1, 2] })
+    expect(cb).not.toHaveBeenCalled()
+    rerender({ value: [1, 3] })
+    expect(cb).toHaveBeenCalledWith([1, 3], [1, 2])
   })
 
   describe('options', () => {
