@@ -16,3 +16,5 @@ export function resolveComparator<T>(x: ComparatorOption<T>) {
       return x
   }
 }
+
+export const id = <T>(x: T): T => x

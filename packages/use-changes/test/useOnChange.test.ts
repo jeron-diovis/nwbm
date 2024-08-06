@@ -1,6 +1,7 @@
 import { useState } from 'react'
 
 import { act, renderHook } from '@testing-library/react'
+import { shallowEqual } from 'fast-equals'
 
 import { useOnChange } from '../src'
 
@@ -175,6 +176,41 @@ describe('useOnChange', () => {
       rerender({ value: 6 })
       expect(filter).toHaveBeenCalledWith(6, 3)
       expect(cb).toHaveBeenCalledWith(6, 3)
+    })
+
+    describe('by', () => {
+      it('should compare mapped values', () => {
+        const value1 = { a: [1, 2, 3] }
+        const value2 = { a: [3, 1, 2] }
+
+        const cb = vi.fn()
+        const by = vi.fn((x: typeof value1) => x.a)
+        const eq = vi.fn(shallowEqual)
+        const filter = vi.fn(() => true)
+
+        const { rerender } = renderHook(
+          ({ value }) =>
+            useOnChange(value, cb, {
+              eq,
+              by,
+              filter,
+            }),
+          {
+            initialProps: { value: value1 },
+          }
+        )
+        expect(cb).not.toHaveBeenCalled()
+        rerender({ value: value2 })
+
+        expect(by).toHaveBeenNthCalledWith(1, value2)
+        expect(by).toHaveBeenNthCalledWith(2, value1)
+
+        expect(eq).toHaveBeenCalledWith(value2.a, value1.a)
+
+        expect(filter).toHaveBeenCalledWith(value2.a, value1.a)
+
+        expect(cb).toHaveBeenCalledWith(value2, value1)
+      })
     })
   })
 })

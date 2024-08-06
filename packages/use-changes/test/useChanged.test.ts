@@ -64,7 +64,7 @@ describe('useChanged', () => {
 
     it('by', () => {
       const value1 = { a: [1, 2, 3] }
-      const value2 = { a: [3, 2, 1] }
+      const value2 = { a: [3, 1, 2] }
 
       const { result, rerender } = renderHook(
         ({ value }) =>

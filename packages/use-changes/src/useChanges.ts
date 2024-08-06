@@ -3,15 +3,14 @@ import { useRef } from 'react'
 import {
   ComparatorOption,
   DEFAULT_COMPARATOR_OPTION,
+  id,
   resolveComparator,
 } from './utils'
 
-export interface UseChangesOptions<T, K = T> {
+export interface UseChangesOptions<T = unknown, K = T> {
   eq?: ComparatorOption<K>
   by?: (value: T) => K
 }
-
-const id = <T>(x: T): T => x
 
 export function useChanges<T, K = T>(
   value: T,
@@ -26,9 +25,7 @@ export function useChanges<T, K = T>(
   const prev = ref.current
 
   const equals = resolveComparator(eq)
-  const mappedValue = by(value)
-  const mappedPrev = by(prev)
-  const changed = !equals(mappedValue, mappedPrev)
+  const changed = !equals(by(value), by(prev))
 
   if (changed) {
     ref.current = value
