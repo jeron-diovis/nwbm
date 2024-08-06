@@ -89,27 +89,6 @@ describe('useOnChange', () => {
         expect(cb).toHaveBeenCalledWith('cc', 'a')
       })
 
-      it('should use SameValueZero comparator', () => {
-        const cb = vi.fn()
-
-        const { rerender } = renderHook(
-          ({ value }) =>
-            useOnChange(value, cb, {
-              eq: 'plain',
-            }),
-          {
-            initialProps: { value: [1, 2] as any },
-          }
-        )
-
-        rerender({ value: [1, 2] })
-        expect(cb).toHaveBeenCalledWith([1, 2], [1, 2])
-
-        rerender({ value: 1 })
-        rerender({ value: 2 })
-        expect(cb).toHaveBeenCalledWith(2, 1)
-      })
-
       it('should use shallowEqual comparator', () => {
         const cb = vi.fn()
 

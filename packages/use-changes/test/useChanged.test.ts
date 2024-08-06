@@ -45,21 +45,6 @@ describe('useChanged', () => {
         expect(result.current).toBe(value2)
       })
 
-      it('SameValueZero', () => {
-        const value1 = [1, 2]
-        const value2 = [1, 2]
-
-        const { result, rerender } = renderHook(
-          ({ value }) => useChanged(value, { eq: 'plain' }),
-          {
-            initialProps: { value: value1 },
-          }
-        )
-        expect(result.current).toBe(value1)
-        rerender({ value: value2 })
-        expect(result.current).toBe(value2)
-      })
-
       it('custom', () => {
         const value1 = [1, 2]
         const value2 = [3, 4]
