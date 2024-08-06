@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useLayoutEffect, useRef } from 'react'
 
 import {
   ComparatorOption,
@@ -15,7 +15,8 @@ export type UseOnChangeOptions<T = unknown, K = T> = {
   by?: (value: T) => K
 }
 
-export function useOnChange<T, K = T>(
+function useOnChangeImpl<T, K>(
+  useEffectImpl: typeof useEffect,
   value: T,
   callback: (current: T, prev: T) => void,
   { enabled = true, ...options }: UseOnChangeOptions<T, K> = {}
@@ -24,11 +25,11 @@ export function useOnChange<T, K = T>(
   const previous = useRef(value)
 
   const refOptions = useRef(options)
-  useEffect(() => {
+  useEffectImpl(() => {
     refOptions.current = options
   })
 
-  useEffect(
+  useEffectImpl(
     () => {
       const {
         runOnMount = false,
@@ -68,3 +69,19 @@ export function useOnChange<T, K = T>(
     [value, enabled]
   )
 }
+
+// ---
+
+export interface IUseOnChange {
+  <T, K = T>(
+    value: T,
+    callback: (current: T, prev: T) => void,
+    options?: UseOnChangeOptions<T, K>
+  ): void
+}
+
+export const useOnChange: IUseOnChange = (...args) =>
+  useOnChangeImpl(useEffect, ...args)
+
+export const useOnChangeLayout: IUseOnChange = (...args) =>
+  useOnChangeImpl(useLayoutEffect, ...args)
