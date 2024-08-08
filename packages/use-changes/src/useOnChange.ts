@@ -80,8 +80,9 @@ export interface IUseOnChange {
   ): void
 }
 
-export const useOnChange: IUseOnChange = (...args) =>
-  useOnChangeImpl(useEffect, ...args)
+export const useOnChange = useOnChangeImpl.bind(null, useEffect) as IUseOnChange
 
-export const useOnChangeLayout: IUseOnChange = (...args) =>
-  useOnChangeImpl(useLayoutEffect, ...args)
+export const useOnChangeLayout = useOnChangeImpl.bind(
+  null,
+  useLayoutEffect
+) as IUseOnChange
