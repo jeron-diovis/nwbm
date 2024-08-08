@@ -1,24 +1,41 @@
 import { useState } from 'react'
 
+import { useOnChange } from '../src'
+
 import './App.css'
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [value, setValue] = useState(1)
+  const [factor, setFactor] = useState(1)
+  const [result, setResult] = useState(value * factor)
+
+  useOnChange(value, value => {
+    setResult(value * factor)
+  })
 
   return (
     <>
-      <h1>Vite + React</h1>
       <div className="card">
-        <button onClick={() => setCount(count => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
+        <div>Result: {result}</div>
+        <label>
+          Value:
+          <input
+            type="number"
+            value={value}
+            onChange={e => setValue(e.target.valueAsNumber)}
+          />
+        </label>
+        <br />
+
+        <label>
+          Factor:
+          <input
+            type="number"
+            value={factor}
+            onChange={e => setFactor(e.target.valueAsNumber)}
+          />
+        </label>
       </div>
-      <p className="read_the_docs">
-        Click on the Vite and React logos to learn more
-      </p>
     </>
   )
 }

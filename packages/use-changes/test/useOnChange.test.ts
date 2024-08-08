@@ -52,6 +52,29 @@ describe('useOnChange', () => {
     expect(cb).toHaveBeenCalledWith([1, 3], [1, 2])
   })
 
+  it('should always use latest callback', () => {
+    const cb = vi.fn()
+
+    const { result } = renderHook(() => {
+      const [value, setValue] = useState(1)
+      const [factor, setFactor] = useState(1)
+      useOnChange(value, value => cb(value * factor))
+      return {
+        value: [value, setValue],
+        factor: [factor, setFactor],
+      } as const
+    })
+
+    expect(cb).not.toHaveBeenCalled()
+    act(() => result.current.value[1](2))
+    expect(cb).toHaveBeenCalledWith(2)
+    act(() => {
+      result.current.factor[1](2)
+      result.current.value[1](3)
+    })
+    expect(cb).toHaveBeenCalledWith(6)
+  })
+
   describe('options', () => {
     it('runOnMount', () => {
       const cb = vi.fn()
