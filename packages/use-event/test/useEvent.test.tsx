@@ -130,5 +130,26 @@ describe('useEvent', () => {
 
       expect(scenario).not.toThrow()
     })
+
+    it('should always call the latest listener', () => {
+      const cb = vi.fn()
+      type EventMap = { test: [{ value: number }] }
+      const emitter = new EventEmitter<EventMap>()
+
+      const { rerender } = renderHook(
+        ({ factor }) => {
+          useEvent(emitter, 'test', e => cb(e.value * factor))
+        },
+        {
+          initialProps: { factor: 1 },
+        }
+      )
+
+      emitter.emit('test', { value: 1 })
+      expect(cb).toHaveBeenCalledWith(1)
+      rerender({ factor: 2 })
+      emitter.emit('test', { value: 2 })
+      expect(cb).toHaveBeenCalledWith(4)
+    })
   })
 })
