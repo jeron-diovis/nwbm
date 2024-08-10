@@ -2,6 +2,12 @@
 
 React hooks for subscribing to event emitters.
 
+## Installation
+
+```sh
+npm install @nwbm/use-event
+```
+
 ---
 
 ## [useDomEvent](/packages/use-event/docs/useDomEvent.md)
