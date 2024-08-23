@@ -183,10 +183,7 @@ describe('useOnChange', () => {
       const filter = vi.fn((next, prev) => next / prev === 2)
 
       const { rerender } = renderHook(
-        ({ value }) =>
-          useOnChange(value, cb, {
-            filter,
-          }),
+        ({ value }) => useOnChange(value, cb, { filter }),
         {
           initialProps: { value: 1 },
         }
@@ -196,9 +193,9 @@ describe('useOnChange', () => {
       expect(filter).toHaveBeenCalledWith(3, 1)
       expect(cb).not.toHaveBeenCalled()
 
-      rerender({ value: 6 })
-      expect(filter).toHaveBeenCalledWith(6, 3)
-      expect(cb).toHaveBeenCalledWith(6, 3)
+      rerender({ value: 2 })
+      expect(filter).toHaveBeenCalledWith(2, 1)
+      expect(cb).toHaveBeenCalledWith(2, 1)
     })
 
     describe('by', () => {

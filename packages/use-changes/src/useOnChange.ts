@@ -54,12 +54,12 @@ function useOnChangeImpl<T, K>(
       const byPrev = by(prev)
       const equals = resolveComparator(eq)
       if (equals(byValue, byPrev)) return
-      previous.current = value
       /* Filter by _mapped_ values
        * Filter is meant to accompany diff calculation.
        * Usecase of "compare by mapped values, filter by original" feels too complicated,
        * hook becomes overloaded with multiple non-related to each other functions. */
       if (filter?.(byValue, byPrev) === false) return
+      previous.current = value
       callback(value, prev)
     },
     /* Depend on value – by definition.
