@@ -8,11 +8,11 @@ import {
 } from './utils'
 
 export type UseOnChangeOptions<T = unknown, K = T> = {
-  eq?: ComparatorOption<K>
-  runOnMount?: boolean
-  enabled?: boolean
-  filter?: (value: K, prev: K) => boolean
   by?: (value: T) => K
+  eq?: ComparatorOption<K>
+  filter?: (value: K, prev: K) => boolean
+  enabled?: boolean
+  runOnMount?: boolean
 }
 
 function useOnChangeImpl<T, K>(
