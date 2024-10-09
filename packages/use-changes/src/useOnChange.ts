@@ -25,9 +25,7 @@ function useOnChangeImpl<T, K>(
   const previous = useRef(value)
 
   const refOptions = useRef(options)
-  useEffectImpl(() => {
-    refOptions.current = options
-  })
+  refOptions.current = options
 
   useEffectImpl(
     () => {

@@ -17,7 +17,7 @@ function MyComponent({ a, b }) {
 ## API
 
 ```ts
-useChanged<T, K = T>(
+useChanges<T, K = T>(
   value: T,
   options?: {
     by?: (value: T) => K,

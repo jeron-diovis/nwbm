@@ -40,3 +40,22 @@ export function useChanged<T, K = T>(
   const { value: next, prev, changed } = useChanges(value, options)
   return changed ? next : prev
 }
+
+const NONE = {}
+
+export function useDiff<T, R, K = T>(
+  value: T,
+  map: (next: T, prev: T, isInitial: boolean) => R,
+  options: UseChangesOptions<T, K> = {}
+): R {
+  const ref = useRef<R>(NONE as R)
+
+  const { value: next, prev, changed } = useChanges(value, options)
+
+  const isInitial = ref.current === NONE
+  if (isInitial || changed) {
+    ref.current = map(next, prev, isInitial)
+  }
+
+  return ref.current
+}
