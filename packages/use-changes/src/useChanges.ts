@@ -59,7 +59,6 @@ export function useDiff<T, R, K = T>(
   if (isInitial || changed) {
     // do it directly in render, because all referenced values,
     // provided by `useChanges, are already updated in effect
-    console.log('calc diff', value, next, prev)
     ref.current = map(next, prev, isInitial)
   }
 
