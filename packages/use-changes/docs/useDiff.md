@@ -27,11 +27,7 @@ useDiff<T, R, K = T>(
     by?: (value: T) => K,
     eq?: 'shallow' | 'deep' | (next: K, prev: K) => boolean = 'shallow'
   }
-): { 
-  value: T, 
-  prev: T, 
-  changed: boolean 
-}
+): R
 ```
 
 | Argument   | Type                                                                                  | Required | Description                                                                                                                                                               
