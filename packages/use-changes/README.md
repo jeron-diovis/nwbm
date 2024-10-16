@@ -18,6 +18,10 @@ Execute callback when the given value has changed, accordingly to given comparat
 
 Returns new value of given one only if it has changed, accordingly to given comparator logic.
 
+### [useDiff](/packages/use-changes/docs/useDiff.md)
+
+Calculate new value from given one, based on its current a previous value.
+
 ### [useChanges](/packages/use-changes/docs/useChanges.md)
 
 Low-level hook, returning "meta" data about the comparison: current value, previous value, and whether the value has changed.
