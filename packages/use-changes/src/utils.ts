@@ -1,3 +1,5 @@
+import { useEffect, useLayoutEffect } from 'react'
+
 import { deepEqual, shallowEqual } from 'fast-equals'
 
 export type Comparator<T = unknown> = (a: T, b: T) => boolean
@@ -18,3 +20,6 @@ export function resolveComparator<T>(x: ComparatorOption<T>) {
 }
 
 export const id = <T>(x: T): T => x
+
+export const useIsomorphicLayoutEffect =
+  typeof window === 'undefined' ? useEffect : useLayoutEffect

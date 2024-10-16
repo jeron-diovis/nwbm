@@ -1,10 +1,11 @@
-import { useEffect, useLayoutEffect, useRef } from 'react'
+import { useEffect, useRef } from 'react'
 
 import {
   ComparatorOption,
   DEFAULT_COMPARATOR_OPTION,
   id,
   resolveComparator,
+  useIsomorphicLayoutEffect,
 } from './utils'
 
 export type UseOnChangeOptions<T = unknown, K = T> = {
@@ -82,5 +83,5 @@ export const useOnChange = useOnChangeImpl.bind(null, useEffect) as IUseOnChange
 
 export const useOnChangeLayout = useOnChangeImpl.bind(
   null,
-  useLayoutEffect
+  useIsomorphicLayoutEffect
 ) as IUseOnChange

@@ -130,7 +130,7 @@ useOnChange(value, callback, { enabled: someBooleanValue })
 
 ### Layout stage
 
-In some rare cases you may need to track changes specifically in layout stage, before anything is updated in UI.
+In some rare cases you may need to track changes specifically in layout stage, before anything is visually updated in UI.
 
 For that there is a separate dedicated hook version:
 ```tsx
@@ -138,3 +138,5 @@ import { useOnChangeLayout } from '@nwmb/use-changes'
 ```
 
 It has all the same options and logic, with exception that it uses `useLayoutEffect` internally instead of `useEffect`.
+
+> It uses isomorphic layout effect, so it's safe to use in SSR.
