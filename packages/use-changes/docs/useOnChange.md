@@ -105,7 +105,7 @@ useOnChange(count, onChange, { filter: isEven })
 ```
 
 > ⚠️ Note: when `by` option is provided, `filter` receives _derived_ values.
-> If you want to both use `by` and filter callback invocations by _original_ values, do this inside callback itself.
+> If you want to both use `by` and filter callback invocations by _original_ values (what's the usecase for that?), then do this inside callback itself.
 
 ### Run on mount
 
@@ -140,3 +140,27 @@ import { useOnChangeLayout } from '@nwmb/use-changes'
 It has all the same options and logic, with exception that it uses `useLayoutEffect` internally instead of `useEffect`.
 
 > It uses isomorphic layout effect, so it's safe to use in SSR.
+
+## API
+
+```ts
+useOnChange<T, K = T>(
+  value: T,
+  options?: {
+    enabled?: boolean,
+    runOnMount?: boolean,
+    by?: (value: T) => K,
+    eq?: 'shallow' | 'deep' | ((next: K, prev: K) => boolean) = 'shallow',
+    filter?: (next: K, prev: K) => boolean,
+  }
+): void
+```
+
+| Argument           | Type                                                                                  | Required | Description                                                                                                                                                               
+|--------------------|---------------------------------------------------------------------------------------|----------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------|  
+| value              | T                                                                                     | Yes      | Value to compare                                                                                                                                                          | 
+| options.enabled    | boolean                                                                               | No       | Whether to execute hook logic at all.                                                                                                                                     |  
+| options.runOnMount | boolean                                                                         | No       | Whether to run `callback` in mount stage, with equal next and prev values. Defaults to `false`.                                                                           |  
+| options.by         | `(x: T) => K`                                                                         | No       | Derives from `value` a new value to compare.                                                                                                                              |  
+| options.eq         | <code>'shallow' <br/> &#124; 'deep' <br/> &#124; (next: K, prev: K) => boolean</code> | No       | How to compare next and prev values. <br/> Defaults to `'shallow'`. <br/>Uses comparators provided by [`fast-equals`](https://www.npmjs.com/package/fast-equals) package. | 
+| options.filter     | `(next: K, prev: K) => boolean` | No       | Allows to skip certain changes. Note that it receives derived values from `by` option, if it's defined.                                                                   | 
