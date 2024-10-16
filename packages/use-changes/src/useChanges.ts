@@ -1,4 +1,4 @@
-import { useRef } from 'react'
+import { useEffect, useRef } from 'react'
 
 import {
   ComparatorOption,
@@ -27,9 +27,12 @@ export function useChanges<T, K = T>(
   const equals = resolveComparator(eq)
   const changed = !equals(by(value), by(prev))
 
-  if (changed) {
-    ref.current = value
-  }
+  useEffect(() => {
+    if (changed) {
+      ref.current = value
+    }
+  })
+
   return { value, prev, changed }
 }
 
@@ -54,6 +57,9 @@ export function useDiff<T, R, K = T>(
 
   const isInitial = ref.current === NONE
   if (isInitial || changed) {
+    // do it directly in render, because all referenced values,
+    // provided by `useChanges, are already updated in effect
+    console.log('calc diff', value, next, prev)
     ref.current = map(next, prev, isInitial)
   }
 
