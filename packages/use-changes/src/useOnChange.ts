@@ -52,7 +52,7 @@ function useOnChangeImpl<T, K>(
       const byPrev = by(prev)
       const equals = resolveComparator(eq)
       if (equals(byValue, byPrev)) return
-      /* Filter by _mapped_ values
+      /* Filter by _derived_ values
        * Filter is meant to accompany diff calculation.
        * Usecase of "compare by mapped values, filter by original" feels too complicated,
        * hook becomes overloaded with multiple non-related to each other functions. */

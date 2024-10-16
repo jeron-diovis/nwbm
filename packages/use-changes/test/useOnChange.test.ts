@@ -76,20 +76,24 @@ describe('useOnChange', () => {
   })
 
   describe('options', () => {
-    it('runOnMount', () => {
-      const cb = vi.fn()
+    describe('runOnMount', () => {
+      it("should execute once on mount stage with original value as 'next' and 'prev' params, and ignore 'by' and 'filter' options", () => {
+        const cb = vi.fn()
 
-      renderHook(
-        ({ value }) =>
-          useOnChange(value, cb, {
-            runOnMount: true,
-          }),
-        {
-          initialProps: { value: 42 },
-        }
-      )
+        renderHook(
+          ({ value }) =>
+            useOnChange(value, cb, {
+              runOnMount: true,
+              by: x => x / 2,
+              filter: () => false,
+            }),
+          {
+            initialProps: { value: 42 },
+          }
+        )
 
-      expect(cb).toHaveBeenCalledWith(42, 42)
+        expect(cb).toHaveBeenCalledWith(42, 42)
+      })
     })
 
     describe('eq', () => {
@@ -199,7 +203,7 @@ describe('useOnChange', () => {
     })
 
     describe('by', () => {
-      it('should compare mapped values', () => {
+      it('should compare derived values', () => {
         const value1 = { a: [1, 2, 3] }
         const value2 = { a: [3, 1, 2] }
 
