@@ -102,6 +102,7 @@ describe('useDomEvent', () => {
         {
           keypress: e => cb(e.key),
           click: e => cb(e.button),
+          blur: () => cb(), // even with explicit arg, type of `filter` arg must be inferred
         },
         {
           filter: e => !e.defaultPrevented,

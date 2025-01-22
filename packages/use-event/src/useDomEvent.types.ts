@@ -17,7 +17,9 @@ export interface IUseDomEvent {
   <T extends Target, M extends ListenersMap<GetEventsMap<T>>>(
     el: T,
     events: Listeners<M, GetEventsMap<T>>,
-    options?: UseDomEventOptions<GetFirstArg<M[keyof M]>>
+    options?: UseDomEventOptions<
+      GetFirstArg<LookupByKeys<M, ListenersMap<GetEventsMap<T>>>>
+    >
   ): void
 
   <T extends Target, E extends keyof GetEventsMap<T>>(
@@ -71,6 +73,10 @@ type Overwrite<T extends object, O extends { [K in keyof T]?: unknown }> = Omit<
   O
 
 type GetFirstArg<T> = T extends (x: infer A) => unknown ? A : never
+
+type LookupByKeys<Source, Target> = keyof Source extends keyof Target
+  ? Target[keyof Source]
+  : never
 
 /*
  * A hack to make excess props validation work for generics.
