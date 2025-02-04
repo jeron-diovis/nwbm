@@ -84,4 +84,7 @@ type LookupByKeys<Source, Target> = keyof Source extends keyof Target
  *
  * Name it `Listeners` just to make it look nice in TS error messages.
  */
-type Listeners<A, B> = A & Record<Exclude<keyof A, keyof B>, never>
+type Listeners<A, B> =
+  Exclude<keyof A, keyof B> extends never
+    ? A
+    : A & Record<Exclude<keyof A, keyof B>, never>
