@@ -64,7 +64,6 @@ function useOnChangeImpl<T, K>(
     /* Depend on value – by definition.
      * Depend on `enabled` - as it's meant to change hook behavior, even if value is the same.
      * Ignore everything else */
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     [value, enabled]
   )
 }
