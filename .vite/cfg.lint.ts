@@ -32,7 +32,10 @@ export const useLint = (scripts: LintScripts) =>
            * Add `--max-warnings=0` to make `vite build` fail if anything violates lint rules.
            * Somehow, this does not affect behavior of dev mode.
            */
-          eslint: { lintCommand: `${scripts.eslint} --max-warnings=0` },
+          eslint: {
+            lintCommand: `${scripts.eslint} --max-warnings=0`,
+            useFlatConfig: true,
+          },
 
           ...(scripts.stylelint && {
             stylelint: {

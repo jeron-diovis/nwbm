@@ -93,6 +93,7 @@ export default [
             // Vite configs
             'vite.config.*',
             '.vite/*',
+            '**/.vite*/*',
             // Other 'rc' config files
             '.*rc.{c,}{j,t}s',
             // demo

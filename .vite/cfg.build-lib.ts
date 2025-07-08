@@ -1,5 +1,3 @@
-// @ts-expect-error rollup-plugin-terser some irrelevant typings issues in this pkg
-import { terser } from 'rollup-plugin-terser'
 import { LibraryOptions } from 'vite'
 /**
  * @link https://github.com/egoist/vite-plugin-dts
@@ -42,17 +40,6 @@ export const useBuildLib = (cfg: BuildLibConfig) =>
       minify: true,
       sourcemap: true,
       copyPublicDir: false,
-
-      rollupOptions: {
-        plugins: [
-          terser({
-            mangle: false,
-            format: {
-              comments: false,
-            },
-          }),
-        ],
-      },
     },
 
     plugins: [

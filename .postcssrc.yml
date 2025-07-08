@@ -4,5 +4,6 @@ plugins:
   # @see https://github.com/postcss/postcss-nested
   postcss-nested: {}
   # @see https://github.com/csstools/postcss-custom-selectors
-  postcss-custom-selectors:
+  postcss-custom-selectors: {
     preserve: true
+  }

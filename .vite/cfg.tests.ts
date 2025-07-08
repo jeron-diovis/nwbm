@@ -18,8 +18,13 @@ export const useTests = defineChunk(() => ({
      */
     // includeSource: ['src/!**/!*.{js,ts}{,x}'],
   },
-  /**
-   * @see https://vitest.dev/guide/in-source.html#production-build
-   */
-  define: { 'import.meta.vitest': 'undefined' },
+  define: {
+    /**
+     * @see https://vitest.dev/guide/in-source.html#production-build
+     */
+    'import.meta.vitest': 'undefined',
+
+    /** Whatever the hell punycode is, it spams it's deprecation warnings no matter what you do */
+    'process.env.NODE_OPTIONS': '"--no-deprecation"',
+  },
 }))
