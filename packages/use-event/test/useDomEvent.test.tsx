@@ -115,4 +115,41 @@ describe('useDomEvent', () => {
 
     expect(cb).toHaveBeenCalledTimes(2)
   })
+
+  it('should support custom events', () => {
+    const cb = vi.fn()
+
+    type MyCustomEvent = CustomEvent<{ foo: number }>
+
+    renderHook(() =>
+      useDomEvent<MyCustomEvent, 'my-custom-event'>(
+        'document',
+        'my-custom-event',
+        cb,
+        {
+          filter: e => e.detail.foo === 2,
+        }
+      )
+    )
+
+    document.dispatchEvent(
+      new CustomEvent('my-custom-event', {
+        detail: { foo: 1 },
+      }) satisfies MyCustomEvent
+    )
+
+    document.dispatchEvent(
+      new CustomEvent('my-custom-event', {
+        detail: { foo: 2 },
+      }) satisfies MyCustomEvent
+    )
+
+    expect(cb).toHaveBeenCalledTimes(1)
+    expect(cb).toHaveBeenCalledWith(
+      expect.objectContaining({
+        type: 'my-custom-event',
+        detail: { foo: 2 },
+      })
+    )
+  })
 })

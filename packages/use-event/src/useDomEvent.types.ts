@@ -28,6 +28,16 @@ export interface IUseDomEvent {
     callback: Listener<GetEventsMap<T>[E]>,
     options?: UseDomEventOptions<GetEventsMap<T>[E]>
   ): void
+
+  <
+    EventType extends CustomEvent = CustomEvent<unknown>,
+    EventName extends string = string,
+  >(
+    el: Target,
+    event: EventName | EventName[],
+    callback: Listener<EventType>,
+    options?: UseDomEventOptions<EventType>
+  ): void
 }
 
 // ---
