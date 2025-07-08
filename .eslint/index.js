@@ -1,3 +1,5 @@
+import globals from 'globals'
+
 import cfgBase from './base.js'
 import cfgImports from './imports.js'
 import cfgPrettier from './prettier.js'
@@ -35,8 +37,16 @@ export default [
   },
   {
     files: ['**/*.cjs'],
+    languageOptions: {
+      sourceType: 'commonjs',
+      globals: globals.node,
+    },
     rules: {
       '@typescript-eslint/no-require-imports': 'off',
     },
+  },
+
+  {
+    ignores: ['dist', 'stats', 'coverage'],
   },
 ]
